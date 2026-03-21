@@ -14,10 +14,28 @@ struct PersistenceController {
     static let preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-        for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-        }
+        let company = Company(context: viewContext)
+        company.id = UUID()
+        company.name = "Acme Studio"
+
+        let project = Project(context: viewContext)
+        project.id = UUID()
+        project.name = "Website Redesign"
+        project.isActive = true
+        project.colorHex = "3B82F6"
+        project.company = company
+
+        let session = Session(context: viewContext)
+        session.id = UUID()
+        session.note = "Homepage audit"
+        session.project = project
+
+        let segment = SessionSegment(context: viewContext)
+        segment.id = UUID()
+        segment.startAt = Calendar.current.date(byAdding: .hour, value: -2, to: Date()) ?? Date()
+        segment.endAt = Date()
+        segment.session = session
+
         do {
             try viewContext.save()
         } catch {

@@ -1,30 +1,33 @@
 import SwiftUI
+import CoreData
 
-struct AddSessionView: View {
+struct EditSessionView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) private var dismiss
+
+    let session: Session
 
     @FetchRequest(
         sortDescriptors: [
             NSSortDescriptor(key: "company.name", ascending: true),
             NSSortDescriptor(key: "name", ascending: true)
         ],
-        predicate: NSPredicate(format: "isActive == YES"),
+        predicate: NSPredicate(format: "isArchived == NO"),
         animation: .default
     )
     private var projects: FetchedResults<Project>
 
     @State private var selectedProjectID: NSManagedObjectID?
-    @State private var note: String = ""
-    @State private var startAt: Date = Calendar.current.date(byAdding: .hour, value: -1, to: Date()) ?? Date()
+    @State private var startAt: Date = Date()
     @State private var endAt: Date = Date()
+    @State private var note: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Add Session")
+            Text("Edit Session")
                 .font(.title2)
                 .fontWeight(.semibold)
-            Text("Manually log time in one place.")
+            Text("Adjust time, note, or project.")
                 .foregroundColor(.secondary)
 
             VStack(alignment: .leading, spacing: 8) {
@@ -68,24 +71,28 @@ struct AddSessionView: View {
                     .cornerRadius(8)
             }
 
+            if isRunning {
+                Text("Running sessions can’t be edited. Pause or finish first.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
             HStack {
                 Spacer()
-                Button("Cancel") {
-                    dismiss()
-                }
-                Button("Save") {
-                    saveSession()
-                }
-                .keyboardShortcut(.defaultAction)
-                .disabled(selectedProjectID == nil || endAt <= startAt)
+                Button("Cancel") { dismiss() }
+                Button("Save") { saveChanges() }
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(isRunning || endAt <= startAt)
             }
         }
         .padding(24)
         .frame(width: 420)
         .onAppear {
-            if selectedProjectID == nil {
-                selectedProjectID = projects.first?.objectID
-            }
+            note = session.note ?? ""
+            let segments = (session.segments as? Set<SessionSegment>) ?? []
+            startAt = segments.compactMap { $0.startAt }.min() ?? Date()
+            endAt = segments.compactMap { $0.endAt }.max() ?? Date()
+            selectedProjectID = session.project?.objectID ?? projects.first?.objectID
         }
         .onChange(of: projects.count) { _ in
             if selectedProjectID == nil {
@@ -94,21 +101,26 @@ struct AddSessionView: View {
         }
     }
 
-    private func saveSession() {
-        guard let projectID = selectedProjectID,
-              let project = viewContext.object(with: projectID) as? Project else {
-            return
-        }
-        let session = Session(context: viewContext)
-        session.id = UUID()
-        session.note = note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : note
-        session.project = project
+    private var isRunning: Bool {
+        let segments = (session.segments as? Set<SessionSegment>) ?? []
+        return segments.contains { $0.endAt == nil }
+    }
 
-        let segment = SessionSegment(context: viewContext)
-        segment.id = UUID()
-        segment.startAt = startAt
-        segment.endAt = endAt
-        segment.session = session
+    private func saveChanges() {
+        session.note = note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : note
+        if let projectID = selectedProjectID,
+           let project = viewContext.object(with: projectID) as? Project {
+            session.project = project
+        }
+        let segments = (session.segments as? Set<SessionSegment>) ?? []
+        for segment in segments {
+            viewContext.delete(segment)
+        }
+        let newSegment = SessionSegment(context: viewContext)
+        newSegment.id = UUID()
+        newSegment.startAt = startAt
+        newSegment.endAt = endAt
+        newSegment.session = session
 
         try? viewContext.save()
         dismiss()
@@ -116,6 +128,9 @@ struct AddSessionView: View {
 }
 
 #Preview {
-    AddSessionView()
-        .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    let context = PersistenceController.preview.container.viewContext
+    let request = NSFetchRequest<Session>(entityName: "Session")
+    let session = (try? context.fetch(request).first) ?? Session(context: context)
+    return EditSessionView(session: session)
+        .environment(\.managedObjectContext, context)
 }

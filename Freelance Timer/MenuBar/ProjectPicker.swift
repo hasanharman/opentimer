@@ -9,7 +9,7 @@ struct ProjectPicker: View {
             NSSortDescriptor(key: "company.name", ascending: true),
             NSSortDescriptor(key: "name", ascending: true)
         ],
-        predicate: NSPredicate(format: "isActive == YES"),
+        predicate: NSPredicate(format: "isActive == YES AND isArchived == NO"),
         animation: .default
     )
     private var projects: FetchedResults<Project>

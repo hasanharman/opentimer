@@ -10,6 +10,8 @@ struct SettingsView: View {
             Text("Settings")
                 .font(.title2)
                 .fontWeight(.semibold)
+            Text("Manage data and exports.")
+                .foregroundColor(.secondary)
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("Data")
@@ -61,6 +63,33 @@ enum DataExporter {
                 } / 3600.0
                 let note = (session.note ?? "").replacingOccurrences(of: "\"", with: "\"\"")
                 let row = "\"\(company)\",\"\(project)\",\"\(start?.ISO8601Format() ?? "")\",\"\(end?.ISO8601Format() ?? "")\",\"\(String(format: "%.2f", duration))\",\"\(note)\""
+                rows.append(row)
+            }
+            let csv = rows.joined(separator: "\n")
+            try? csv.data(using: .utf8)?.write(to: url)
+        }
+    }
+
+    static func exportProjectCSV(context: NSManagedObjectContext, project: Project) {
+        let panel = NSSavePanel()
+        panel.allowedFileTypes = ["csv"]
+        panel.nameFieldStringValue = "\(project.name ?? "project").csv"
+        if panel.runModal() == .OK, let url = panel.url {
+            let sessions = (project.sessions as? Set<Session>) ?? []
+            var rows: [String] = ["company,project,start,end,duration_hours,note"]
+            for session in sessions {
+                let company = session.project?.company?.name ?? ""
+                let projectName = session.project?.name ?? ""
+                let segments = (session.segments as? Set<SessionSegment>) ?? []
+                let start = segments.compactMap { $0.startAt }.min()
+                let end = segments.compactMap { $0.endAt }.max()
+                let duration = segments.reduce(0.0) { partial, segment in
+                    let s = segment.startAt ?? Date()
+                    let e = segment.endAt ?? Date()
+                    return partial + max(0, e.timeIntervalSince(s))
+                } / 3600.0
+                let note = (session.note ?? "").replacingOccurrences(of: "\"", with: "\"\"")
+                let row = "\"\(company)\",\"\(projectName)\",\"\(start?.ISO8601Format() ?? "")\",\"\(end?.ISO8601Format() ?? "")\",\"\(String(format: "%.2f", duration))\",\"\(note)\""
                 rows.append(row)
             }
             let csv = rows.joined(separator: "\n")

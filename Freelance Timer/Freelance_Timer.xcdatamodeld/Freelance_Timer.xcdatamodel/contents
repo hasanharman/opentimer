@@ -8,6 +8,7 @@
     <entity name="Project" representedClassName="Project" syncable="YES" codeGenerationType="class">
         <attribute name="colorHex" optional="YES" attributeType="String"/>
         <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isArchived" optional="NO" attributeType="Boolean" usesScalarValueType="YES" defaultValueString="NO"/>
         <attribute name="isActive" optional="NO" attributeType="Boolean" usesScalarValueType="YES" defaultValueString="YES"/>
         <attribute name="name" optional="NO" attributeType="String"/>
         <relationship name="company" optional="NO" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="projects" inverseEntity="Company"/>

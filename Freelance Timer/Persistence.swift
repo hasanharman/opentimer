@@ -22,6 +22,7 @@ struct PersistenceController {
         project.id = UUID()
         project.name = "Website Redesign"
         project.isActive = true
+        project.isArchived = false
         project.colorHex = "3B82F6"
         project.company = company
 

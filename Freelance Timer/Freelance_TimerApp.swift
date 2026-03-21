@@ -43,8 +43,14 @@ struct Freelance_TimerApp: App {
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(sessionController)
         } label: {
-            if sessionController.isRunning {
-                Label(sessionController.menuBarTitle(), systemImage: "stopwatch")
+            if sessionController.activeSession != nil {
+                HStack(spacing: 4) {
+                    Text(sessionController.menuBarTitle())
+                        .lineLimit(1)
+                        .monospacedDigit()
+                    Image(systemName: sessionController.isRunning ? "play.circle.fill" : "pause.circle")
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
             } else {
                 Image(systemName: "stopwatch")
             }

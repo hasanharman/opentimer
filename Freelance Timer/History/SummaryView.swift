@@ -44,13 +44,7 @@ struct SummaryView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .padding(14)
-            .background(Color(NSColor.windowBackgroundColor))
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color(NSColor.separatorColor), lineWidth: 1)
-            )
+            .cardStyle()
         }
     }
 

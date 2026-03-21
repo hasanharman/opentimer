@@ -88,6 +88,7 @@ struct OnboardingView: View {
         project.id = UUID()
         project.name = trimmedProject
         project.isActive = true
+        project.isArchived = false
         project.colorHex = projectColor.rawValue
         project.company = company
 

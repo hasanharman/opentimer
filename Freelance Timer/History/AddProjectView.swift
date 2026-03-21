@@ -21,6 +21,8 @@ struct AddProjectView: View {
             Text("New Project")
                 .font(.title2)
                 .fontWeight(.semibold)
+            Text("Keep it simple and organized.")
+                .foregroundColor(.secondary)
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("Company")
@@ -118,6 +120,7 @@ struct AddProjectView: View {
         project.id = UUID()
         project.name = trimmedProject
         project.isActive = isActive
+        project.isArchived = false
         project.colorHex = color.rawValue
         project.company = company
 

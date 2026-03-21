@@ -12,7 +12,7 @@ struct MenuBarView: View {
             NSSortDescriptor(key: "company.name", ascending: true),
             NSSortDescriptor(key: "name", ascending: true)
         ],
-        predicate: NSPredicate(format: "isActive == YES"),
+        predicate: NSPredicate(format: "isActive == YES AND isArchived == NO"),
         animation: .default
     )
     private var projects: FetchedResults<Project>
@@ -47,46 +47,56 @@ struct MenuBarView: View {
             }
 
             if sessionController.activeSession == nil {
-                Button("Start") {
+                Button {
                     startSession()
+                } label: {
+                    Label("Start", systemImage: "play.fill")
                 }
-                Button("Start with Note…") {
+                .keyboardShortcut(.defaultAction)
+
+                Button {
                     startSessionWithPrompt()
+                } label: {
+                    Label("Start with Note…", systemImage: "text.bubble")
                 }
             } else if sessionController.isRunning {
-                Button("Pause") {
+                Button {
                     sessionController.pause()
+                } label: {
+                    Label("Pause", systemImage: "pause.fill")
                 }
-                Button("Finish") {
-                    sessionController.finish()
+                Button {
+                    finishAndOpen()
+                } label: {
+                    Label("Finish", systemImage: "stop.fill")
                 }
             } else {
-                Button("Resume") {
+                Button {
                     sessionController.resume()
+                } label: {
+                    Label("Resume", systemImage: "play.fill")
                 }
-                Button("Finish") {
-                    sessionController.finish()
+                Button {
+                    finishAndOpen()
+                } label: {
+                    Label("Finish", systemImage: "stop.fill")
                 }
             }
 
             Divider()
 
-            Button("Open") {
+            Button {
                 openMainWindow()
-            }
-
-            Text(sessionController.isRunning ? "Running" : "Idle")
-            if let session = sessionController.activeSession {
-                let total = sessionController.totalDuration(for: session, now: sessionController.now)
-                Text(TimeFormatter.hhmmss(from: total))
-            } else {
-                Text("00:00:00")
+            } label: {
+                Label("Open", systemImage: "arrow.up.right.square")
             }
 
             Divider()
 
-            Button("Quit") {
+            Button {
                 NSApp.terminate(nil)
+            } label: {
+                Label("Quit", systemImage: "power")
             }
         }
     }
@@ -125,6 +135,11 @@ struct MenuBarView: View {
         NSApp.sendAction(#selector(NSWindow.makeKeyAndOrderFront), to: nil, from: nil)
     }
 
+    private func finishAndOpen() {
+        sessionController.finish()
+        openMainWindow()
+    }
+
     private func resolveProject() -> Project? {
         if let projectID = sessionController.selectedProjectID,
            let project = viewContext.object(with: projectID) as? Project {
@@ -137,6 +152,7 @@ struct MenuBarView: View {
         return nil
     }
 }
+
 
 #Preview {
     MenuBarView()

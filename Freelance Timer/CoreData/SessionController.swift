@@ -78,9 +78,13 @@ final class SessionController: ObservableObject {
 
     func menuBarTitle() -> String {
         guard let session = activeSession else { return "" }
+        let projectName = session.project?.name ?? "Project"
         let total = totalDuration(for: session, now: now)
         let formatted = TimeFormatter.hhmmss(from: total)
-        return formatted
+        if isRunning {
+            return "\(projectName) · \(formatted)"
+        }
+        return "Paused · \(projectName) · \(formatted)"
     }
 
     func totalDuration(for session: Session, now: Date) -> TimeInterval {

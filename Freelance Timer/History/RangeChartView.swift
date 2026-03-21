@@ -29,13 +29,7 @@ struct RangeChartView: View {
                 AxisMarks(values: .automatic(desiredCount: 6))
             }
             .frame(height: 140)
-            .padding(12)
-            .background(Color(NSColor.windowBackgroundColor))
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color(NSColor.separatorColor), lineWidth: 1)
-            )
+            .cardStyle()
         }
     }
 

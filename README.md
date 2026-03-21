@@ -60,6 +60,21 @@
 - **Export CSV:** `Settings → Export CSV…`
 - **Reset All Data:** `Settings → Reset All Data…`
 
+## Download DMG
+
+1. Create a GitHub Release (e.g. `v0.1.0`) and attach your `.dmg`.
+2. Paste the release link below:
+
+```
+https://github.com/hasanharman/freelance-timer/releases/download/v0.1.0/Freelance-Timer.dmg
+```
+
+Then add a link like:
+
+```
+[Download DMG](https://github.com/hasanharman/freelance-timer/releases/download/v0.1.0/Freelance-Timer.dmg)
+```
+
 ## Tech Stack
 
 - Swift 5.9

@@ -62,18 +62,8 @@
 
 ## Download DMG
 
-1. Create a GitHub Release (e.g. `v0.1.0`) and attach your `.dmg`.
-2. Paste the release link below:
-
-```
-https://github.com/hasanharman/freelance-timer/releases/download/v0.1.0/Freelance-Timer.dmg
-```
-
-Then add a link like:
-
-```
+**Latest release:** `v0.1.0`  
 [Download DMG](https://github.com/hasanharman/freelance-timer/releases/download/v0.1.0/Freelance-Timer.dmg)
-```
 
 ## Tech Stack
 

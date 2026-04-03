@@ -22,9 +22,17 @@
 
 ## Screenshots
 
-![Menubar Dashboard](screenshots/menubar.png)
-![Main Window](screenshots/main.png)
-![Project Detail](screenshots/project-detail.png)
+<p align="center">
+  <img src="screenshots/menubar.png" alt="Menubar Dashboard" width="620" />
+</p>
+
+<p align="center">
+  <img src="screenshots/main.png" alt="Main Window" width="920" />
+</p>
+
+<p align="center">
+  <img src="screenshots/project-detail.png" alt="Project Detail" width="920" />
+</p>
 
 ### Screenshot Guide
 
@@ -39,7 +47,9 @@ Xcode doesn’t have a dedicated macOS UI screenshot tool like iOS Simulator. Th
 
 ## Features
 
-- Menubar dashboard with live timer, quick actions, and recent sessions
+- Native macOS-style main window with App Store-inspired sidebar and glassy cards
+- Menubar dashboard with live timer, quick actions, project picker, and recent sessions
+- Single-project editing sheet (rename, recolor, active state, rates)
 - Project + company management with color tags
 - Hourly rate and optional monthly retainer per project
 - Earnings toggle with currency selection
@@ -79,8 +89,18 @@ Xcode doesn’t have a dedicated macOS UI screenshot tool like iOS Simulator. Th
 
 ## Download DMG
 
-**Latest release:** `v0.1.0`  
-[Download DMG](https://github.com/hasanharman/freelance-timer/releases/download/v0.1.0/Freelance-Timer.dmg)
+Download the latest DMG from GitHub Releases:
+
+[Latest Release (DMG)](https://github.com/hasanharman/freelance-timer/releases/latest)
+
+### Automated Releases
+
+This project includes a GitHub Actions workflow that builds and publishes a versioned DMG automatically when you push a tag:
+
+1. `git tag v1.2.0`
+2. `git push origin v1.2.0`
+
+The workflow will build a Release app, create a DMG, and attach it to a new GitHub Release.
 
 ## Tech Stack
 

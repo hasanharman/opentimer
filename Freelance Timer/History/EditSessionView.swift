@@ -94,7 +94,7 @@ struct EditSessionView: View {
             endAt = segments.compactMap { $0.endAt }.max() ?? Date()
             selectedProjectID = session.project?.objectID ?? projects.first?.objectID
         }
-        .onChange(of: projects.count) { _ in
+        .onChange(of: projects.count) { _, _ in
             if selectedProjectID == nil {
                 selectedProjectID = projects.first?.objectID
             }

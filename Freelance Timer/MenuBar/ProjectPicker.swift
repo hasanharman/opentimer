@@ -19,24 +19,19 @@ struct ProjectPicker: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Project")
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(.subheadline.weight(.medium))
 
             Picker("Project", selection: selectedProjectIDBinding) {
                 ForEach(projects, id: \.objectID) { project in
                     let companyName = project.company?.name ?? "Company"
                     let projectName = project.name ?? "Project"
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(Color(hex: project.colorHex) ?? Color.accentColor)
-                            .frame(width: 8, height: 8)
-                        Text("\(companyName) · \(projectName)")
-                    }
+                    Text("\(companyName) · \(projectName)")
                         .tag(Optional(project.objectID))
                 }
             }
             .labelsHidden()
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .pickerStyle(.menu)
+            .frame(maxWidth: .infinity)
         }
         .onAppear {
             if selectedProjectID == nil {

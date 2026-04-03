@@ -2,9 +2,10 @@ import SwiftUI
 import Charts
 
 struct RangeChartView: View {
-    @EnvironmentObject private var sessionController: SessionController
     let range: SummaryRange
+    let interval: DateInterval
     let sessions: [Session]
+    let now: Date
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -80,8 +81,8 @@ struct RangeChartView: View {
         let total = sessions.reduce(0.0) { partial, session in
             let segments = (session.segments as? Set<SessionSegment>) ?? []
             let segmentTotal = segments.reduce(0.0) { subtotal, segment in
-                let start = segment.startAt ?? sessionController.now
-                let end = segment.endAt ?? sessionController.now
+                let start = segment.startAt ?? now
+                let end = segment.endAt ?? now
                 if end <= bucket.start || start >= bucket.end {
                     return subtotal
                 }
@@ -111,26 +112,7 @@ struct RangeChartView: View {
     }
 
     private var dateInterval: DateInterval {
-        let calendar = Calendar.current
-        let now = sessionController.now
-        switch range {
-        case .day:
-            let start = calendar.startOfDay(for: now)
-            let end = calendar.date(byAdding: .day, value: 1, to: start) ?? now
-            return DateInterval(start: start, end: end)
-        case .week:
-            let weekStart = calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? now
-            let end = calendar.date(byAdding: .day, value: 7, to: weekStart) ?? now
-            return DateInterval(start: weekStart, end: end)
-        case .month:
-            let monthStart = calendar.dateInterval(of: .month, for: now)?.start ?? now
-            let end = calendar.date(byAdding: .month, value: 1, to: monthStart) ?? now
-            return DateInterval(start: monthStart, end: end)
-        case .year:
-            let yearStart = calendar.dateInterval(of: .year, for: now)?.start ?? now
-            let end = calendar.date(byAdding: .year, value: 1, to: yearStart) ?? now
-            return DateInterval(start: yearStart, end: end)
-        }
+        interval
     }
 }
 
@@ -141,7 +123,6 @@ struct ChartPoint: Identifiable {
 }
 
 #Preview {
-    RangeChartView(range: .week, sessions: [])
-        .environmentObject(SessionController(viewContext: PersistenceController.preview.container.viewContext))
+    RangeChartView(range: .week, interval: summaryDateInterval(range: .week, now: Date()), sessions: [], now: Date())
         .padding()
 }

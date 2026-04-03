@@ -39,29 +39,20 @@ struct Freelance_TimerApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            MenuBarView()
+            MenuBarDashboardView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(sessionController)
         } label: {
-            if sessionController.activeSession != nil {
-                HStack(spacing: 4) {
-                    Text(sessionController.menuBarTitle())
-                        .lineLimit(1)
-                        .monospacedDigit()
-                    Image(systemName: sessionController.isRunning ? "play.circle.fill" : "pause.circle")
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-            } else {
-                Image(systemName: "stopwatch")
-            }
+            MenuBarLabelView()
+                .environmentObject(sessionController)
         }
-        .menuBarExtraStyle(.menu)
+        .menuBarExtraStyle(.window)
 
         WindowGroup("Freelance Timer", id: "main") {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(sessionController)
         }
-        .defaultSize(width: 920, height: 640)
+        .defaultSize(width: 1000, height: 680)
     }
 }

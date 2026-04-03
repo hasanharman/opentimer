@@ -87,7 +87,7 @@ struct AddSessionView: View {
                 selectedProjectID = projects.first?.objectID
             }
         }
-        .onChange(of: projects.count) { _ in
+        .onChange(of: projects.count) { _, _ in
             if selectedProjectID == nil {
                 selectedProjectID = projects.first?.objectID
             }

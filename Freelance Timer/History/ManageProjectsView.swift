@@ -3,6 +3,7 @@ import SwiftUI
 struct ManageProjectsView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("currencyCode") private var currencyCode = CurrencyOption.usd.rawValue
 
     let onSelect: (Project) -> Void
     let onDelete: (Project) -> Void
@@ -36,7 +37,18 @@ struct ManageProjectsView: View {
                     .textFieldStyle(.roundedBorder)
                 Toggle("Show Inactive", isOn: $showInactive)
                 Toggle("Show Archived", isOn: $showArchived)
+                Spacer()
+                Picker("Currency", selection: $currencyCode) {
+                    ForEach(CurrencyOption.allCases) { option in
+                        Text(option.displayName).tag(option.rawValue)
+                    }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
             }
+            Text("Hourly is for time-based billing. Monthly is for retainers.")
+                .font(.caption)
+                .foregroundColor(.secondary)
 
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 10) {
@@ -53,6 +65,22 @@ struct ManageProjectsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Hourly")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                TextField("0.00", value: rateBinding(project, keyPath: \.hourlyRate), format: .number.precision(.fractionLength(2)))
+                                    .textFieldStyle(.roundedBorder)
+                                    .frame(width: 100)
+                            }
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Monthly")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                TextField("0.00", value: rateBinding(project, keyPath: \.monthlyFee), format: .number.precision(.fractionLength(2)))
+                                    .textFieldStyle(.roundedBorder)
+                                    .frame(width: 100)
+                            }
                             Toggle("Active", isOn: Binding(
                                 get: { project.isActive },
                                 set: { newValue in
@@ -101,6 +129,16 @@ struct ManageProjectsView: View {
             (project.name ?? "").lowercased().contains(needle) ||
             (project.company?.name ?? "").lowercased().contains(needle)
         }
+    }
+
+    private func rateBinding(_ project: Project, keyPath: ReferenceWritableKeyPath<Project, Double>) -> Binding<Double> {
+        Binding(
+            get: { project[keyPath: keyPath] },
+            set: { newValue in
+                project[keyPath: keyPath] = newValue
+                try? viewContext.save()
+            }
+        )
     }
 }
 

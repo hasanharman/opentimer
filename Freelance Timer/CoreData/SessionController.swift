@@ -5,22 +5,15 @@ import Combine
 final class SessionController: ObservableObject {
     @Published private(set) var activeSession: Session?
     @Published private(set) var activeSegment: SessionSegment?
-    @Published var now: Date = Date()
     @Published var selectedProjectID: NSManagedObjectID?
 
     private let viewContext: NSManagedObjectContext
-    private var timer: Timer?
 
     init(viewContext: NSManagedObjectContext) {
         self.viewContext = viewContext
         self.activeSegment = Self.fetchActiveSegment(in: viewContext)
         self.activeSession = activeSegment?.session
         self.selectedProjectID = activeSession?.project?.objectID
-        startClock()
-    }
-
-    deinit {
-        timer?.invalidate()
     }
 
     var isRunning: Bool {
@@ -29,6 +22,7 @@ final class SessionController: ObservableObject {
 
     func startSession(project: Project, note: String?) {
         guard activeSession == nil else { return }
+        let now = Date()
 
         let session = Session(context: viewContext)
         session.id = UUID()
@@ -48,6 +42,7 @@ final class SessionController: ObservableObject {
 
     func pause() {
         guard let segment = activeSegment else { return }
+        let now = Date()
         segment.endAt = now
         activeSegment = nil
         saveContext()
@@ -55,6 +50,7 @@ final class SessionController: ObservableObject {
 
     func resume() {
         guard let session = activeSession, activeSegment == nil else { return }
+        let now = Date()
         let segment = SessionSegment(context: viewContext)
         segment.id = UUID()
         segment.startAt = now
@@ -64,6 +60,7 @@ final class SessionController: ObservableObject {
     }
 
     func finish() {
+        let now = Date()
         if let segment = activeSegment {
             segment.endAt = now
         }
@@ -76,7 +73,7 @@ final class SessionController: ObservableObject {
         selectedProjectID = project?.objectID
     }
 
-    func menuBarTitle() -> String {
+    func menuBarTitle(now: Date) -> String {
         guard let session = activeSession else { return "" }
         let projectName = session.project?.name ?? "Project"
         let total = totalDuration(for: session, now: now)
@@ -94,13 +91,6 @@ final class SessionController: ObservableObject {
             let end = segment.endAt ?? now
             return partial + max(0, end.timeIntervalSince(start))
         }
-    }
-
-    private func startClock() {
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            self?.now = Date()
-        }
-        RunLoop.main.add(timer!, forMode: .common)
     }
 
     private func saveContext() {

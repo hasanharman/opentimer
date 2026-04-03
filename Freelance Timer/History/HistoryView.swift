@@ -5,6 +5,9 @@ struct HistoryView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @EnvironmentObject private var sessionController: SessionController
 
+    @AppStorage("showEarnings") private var showEarnings = false
+    @AppStorage("currencyCode") private var currencyCode = CurrencyOption.usd.rawValue
+
     @State private var range: SummaryRange = .week
     @State private var showAddSession = false
     @State private var showAddProject = false
@@ -14,6 +17,12 @@ struct HistoryView: View {
     @State private var projectToDelete: Project?
     @State private var sessionToDelete: Session?
     @State private var sessionToEdit: Session?
+    @State private var projectToEdit: Project?
+    @State private var sidebarSelection: DashboardSection = .dashboard
+    @State private var showRangePicker = false
+    @State private var useCustomRange = false
+    @State private var customStart = Calendar.current.startOfDay(for: Date())
+    @State private var customEnd = Calendar.current.startOfDay(for: Date())
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(key: "id", ascending: false)],
@@ -31,74 +40,18 @@ struct HistoryView: View {
     )
     private var projects: FetchedResults<Project>
 
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Freelance Timer")
-                .font(.largeTitle)
-                .fontWeight(.semibold)
-
-            SummaryView(range: $range, sessions: Array(sessions))
-
-            Divider()
-
-            Text("Sessions")
-                .font(.headline)
-
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 12) {
-                    ProjectsSection(
-                        projects: Array(projects),
-                        onSelect: { project in
-                            selectedProjectForDetail = project
-                        },
-                        onDelete: { project in
-                            projectToDelete = project
-                        },
-                        onAdd: {
-                            showAddProject = true
-                        }
-                    )
-
-                    ForEach(groupedSessions, id: \.date) { group in
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(group.date.formatted(date: .abbreviated, time: .omitted))
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            ForEach(group.sessions, id: \.objectID) { session in
-                                SessionRow(session: session)
-                                    .environmentObject(sessionController)
-                                    .contextMenu {
-                                        Button("Edit Session") {
-                                            sessionToEdit = session
-                                        }
-                                        Button("Delete Session") {
-                                            sessionToDelete = session
-                                        }
-                                    }
-                            }
-                        }
-                    }
-                }
-            }
+        NavigationSplitView(columnVisibility: $columnVisibility) {
+            sidebar
+                .navigationSplitViewColumnWidth(min: 220, ideal: 240, max: 280)
+        } detail: {
+            detailContent
         }
-        .padding(24)
-        .background(AppTheme.windowBackground.ignoresSafeArea())
-        .toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
-                Button("Add Session") {
-                    showAddSession = true
-                }
-                Button("New Project") {
-                    showAddProject = true
-                }
-                Button("Manage Projects") {
-                    showManageProjects = true
-                }
-                Button("Settings") {
-                    showSettings = true
-                }
-            }
-        }
+        .navigationSplitViewStyle(.prominentDetail)
+        .background(AppTheme.dashboardBackground.ignoresSafeArea())
+        .toolbar(removing: .sidebarToggle)
         .sheet(isPresented: $showAddSession) {
             AddSessionView()
                 .environment(\.managedObjectContext, viewContext)
@@ -122,7 +75,10 @@ struct HistoryView: View {
         .sheet(item: $selectedProjectForDetail) { project in
             ProjectDetailView(project: project)
                 .environment(\.managedObjectContext, viewContext)
-                .environmentObject(sessionController)
+        }
+        .sheet(item: $projectToEdit) { project in
+            EditProjectView(project: project)
+                .environment(\.managedObjectContext, viewContext)
         }
         .sheet(item: $sessionToEdit) { session in
             EditSessionView(session: session)
@@ -184,6 +140,208 @@ struct HistoryView: View {
         }
     }
 
+    private var sidebar: some View {
+        List(selection: $sidebarSelection) {
+            ForEach(DashboardSection.allCases) { section in
+                Label(section.rawValue, systemImage: section.systemImage)
+                    .tag(section)
+            }
+        }
+        .listStyle(.sidebar)
+        .safeAreaInset(edge: .bottom) {
+            Button {
+                showSettings = true
+            } label: {
+                Label("Settings", systemImage: "gearshape")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .foregroundColor(.secondary)
+            .padding(.horizontal, 12)
+            .padding(.bottom, 12)
+        }
+    }
+
+    private var detailContent: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppTheme.cardSpacing) {
+                dashboardContent
+            }
+            .padding(24)
+        }
+        .background(AppTheme.dashboardBackground)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private var dashboardContent: some View {
+        switch sidebarSelection {
+        case .dashboard:
+            dashboardSummary
+            dashboardSessions
+        case .activities:
+            dashboardSessions
+        case .projects:
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("Projects")
+                        .font(.headline)
+                    Spacer()
+                    Button("New Project") { showAddProject = true }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.regular)
+                }
+                projectsList
+            }
+        }
+    }
+
+    private var dashboardSummary: some View {
+        let now = Date()
+        let interval = resolvedInterval(now: now)
+        let total = TimeMetrics.totalDuration(sessions: Array(sessions), in: interval, now: now)
+        let earnings = TimeMetrics.earnings(sessions: Array(sessions), projects: Array(projects), in: interval, now: now)
+
+        return VStack(alignment: .leading, spacing: AppTheme.cardSpacing) {
+            // Row 1: Title ---- Buttons
+            HStack {
+                Text("Activity Monitor")
+                    .font(.title3.weight(.semibold))
+                Spacer()
+                HStack(spacing: 8) {
+                    Button { showAddSession = true } label: {
+                        Label("Add Session", systemImage: "plus")
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.regular)
+
+                    Button("New Project") { showAddProject = true }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.regular)
+                }
+            }
+
+            // Row 2: Tabs - Date picker - Earnings toggle
+            HStack(spacing: 12) {
+                SegmentedTabs(items: SummaryRange.allCases, selection: $range) { $0.rawValue }
+                    .fixedSize()
+
+                Button {
+                    showRangePicker.toggle()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "calendar")
+                        Text(rangeLabel(interval: interval))
+                            .lineLimit(1)
+                        Image(systemName: "chevron.down")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    .font(.callout)
+                    .foregroundColor(.primary)
+                    .padding(.vertical, 7)
+                    .padding(.horizontal, 12)
+                    .background(.ultraThinMaterial, in: Capsule())
+                    .overlay(Capsule().stroke(AppTheme.dashboardStroke, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .popover(isPresented: $showRangePicker) {
+                    CalendarRangePicker(start: $customStart, end: $customEnd, useCustomRange: $useCustomRange)
+                        .frame(width: 320)
+                        .padding(16)
+                }
+
+                Spacer()
+
+                HStack(spacing: 6) {
+                    Text("Earnings")
+                        .font(.callout)
+                        .foregroundColor(.secondary)
+                    Toggle("Earnings", isOn: $showEarnings)
+                        .toggleStyle(.switch)
+                        .labelsHidden()
+                        .controlSize(.small)
+                }
+            }
+
+            // Chart + stat cards row
+            HStack(alignment: .top, spacing: AppTheme.cardSpacing) {
+                // Chart card
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Focus Activity")
+                        .font(.footnote.weight(.semibold))
+                        .textCase(.uppercase)
+                        .foregroundStyle(.secondary)
+                    Text("Usage Statistics")
+                        .font(.title2.bold())
+                    Spacer()
+                    SimpleRangeChart(sessions: Array(sessions), interval: interval)
+                        .frame(height: 160)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .dashboardCardStyle()
+
+                // Stat cards
+                VStack(spacing: AppTheme.cardSpacing) {
+                    statCard(
+                        title: "Total Worktime",
+                        value: TimeFormatter.hoursMinutes(from: total),
+                        subtitle: "Calculated from sessions"
+                    )
+                    .frame(maxHeight: .infinity)
+                    if showEarnings {
+                        statCard(
+                            title: "Estimated Earnings",
+                            value: CurrencyFormatter.string(from: earnings, currencyCode: currencyCode),
+                            subtitle: "Calculated from projects"
+                        )
+                        .frame(maxHeight: .infinity)
+                    }
+                }
+                .frame(maxHeight: .infinity)
+                .frame(width: 220)
+            }
+            .frame(height: 320)
+        }
+    }
+
+    private var dashboardSessions: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Ongoing Activities")
+                    .font(.headline)
+                Spacer()
+                Button("Manage Projects") { showManageProjects = true }
+                    .buttonStyle(.bordered)
+                    .controlSize(.regular)
+            }
+
+            projectsList
+
+            ForEach(groupedSessions, id: \.date) { group in
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(group.date.formatted(date: .abbreviated, time: .omitted))
+                        .font(.subheadline)
+                        .foregroundColor(AppTheme.dashboardMuted)
+                    ForEach(group.sessions, id: \.objectID) { session in
+                        DashboardSessionRow(session: session, duration: sessionController.totalDuration(for: session, now: Date()))
+                            .contextMenu {
+                                Button("Edit Session") {
+                                    sessionToEdit = session
+                                }
+                                Button("Delete Session") {
+                                    sessionToDelete = session
+                                }
+                            }
+                    }
+                }
+            }
+        }
+    }
+
     private func moveSessionsToUnassigned(_ project: Project) {
         let company: Company
         if let existingCompany = project.company {
@@ -218,6 +376,46 @@ struct HistoryView: View {
         sessions.forEach { $0.project = target }
     }
 
+    private var projectsList: some View {
+        ForEach(projects, id: \.objectID) { project in
+            HStack {
+                Circle()
+                    .fill(Color(hex: project.colorHex) ?? Color.accentColor)
+                    .frame(width: 8, height: 8)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(project.name ?? "Project")
+                        .font(.subheadline)
+                    Text(project.company?.name ?? "Company")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Toggle("Active", isOn: Binding(
+                    get: { project.isActive },
+                    set: { newValue in
+                        project.isActive = newValue
+                        try? viewContext.save()
+                    }
+                ))
+                .labelsHidden()
+                Button {
+                    project.isArchived.toggle()
+                    if project.isArchived { project.isActive = false }
+                    try? viewContext.save()
+                } label: {
+                    Image(systemName: project.isArchived ? "tray.and.arrow.up" : "archivebox")
+                }
+                .buttonStyle(.borderless)
+                Button { projectToDelete = project } label: {
+                    Image(systemName: "trash")
+                }
+                .buttonStyle(.borderless)
+            }
+            .dashboardCardStyle()
+            .onTapGesture { projectToEdit = project }
+        }
+    }
+
     private var groupedSessions: [(date: Date, sessions: [Session])] {
         let sorted = sessions.sorted { lhs, rhs in
             sessionStart(lhs) > sessionStart(rhs)
@@ -235,6 +433,54 @@ struct HistoryView: View {
         let segments = (session.segments as? Set<SessionSegment>) ?? []
         let earliest = segments.compactMap { $0.startAt }.min() ?? Date()
         return earliest
+    }
+
+    private func resolvedInterval(now: Date) -> DateInterval {
+        if useCustomRange {
+            let calendar = Calendar.current
+            let start = calendar.startOfDay(for: min(customStart, customEnd))
+            var end = calendar.startOfDay(for: max(customStart, customEnd))
+            if calendar.isDate(start, inSameDayAs: end) {
+                end = calendar.date(byAdding: .day, value: 1, to: end) ?? end
+            }
+            return DateInterval(start: start, end: end)
+        }
+        return summaryDateInterval(range: range, now: now)
+    }
+
+    private func rangeLabel(interval: DateInterval) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        let display = displayRange(interval: interval)
+        if useCustomRange {
+            return "\(formatter.string(from: customStart)) – \(formatter.string(from: customEnd))"
+        }
+        return "\(formatter.string(from: display.start)) – \(formatter.string(from: display.end))"
+    }
+
+    private func displayRange(interval: DateInterval) -> (start: Date, end: Date) {
+        let calendar = Calendar.current
+        let start = interval.start
+        let end = calendar.date(byAdding: .day, value: -1, to: interval.end) ?? interval.end
+        return (start, end)
+    }
+
+    private func statCard(title: String, value: String, subtitle: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.footnote.weight(.semibold))
+                .textCase(.uppercase)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.title.bold())
+            Spacer()
+            Text(subtitle)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .dashboardCardStyle(elevated: true)
     }
 }
 
@@ -257,85 +503,21 @@ struct SessionRow: View {
                 if let note = session.note, !note.isEmpty {
                     Text(note)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppTheme.dashboardMuted)
                 }
             }
             Spacer()
-            Text(TimeFormatter.hoursMinutes(from: sessionController.totalDuration(for: session, now: sessionController.now)))
+            Text(TimeFormatter.hoursMinutes(from: sessionController.totalDuration(for: session, now: Date())))
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppTheme.dashboardMuted)
         }
         .padding(10)
-        .background(Color(NSColor.windowBackgroundColor))
+        .background(AppTheme.dashboardCard)
         .cornerRadius(8)
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(NSColor.separatorColor), lineWidth: 1)
+                .stroke(AppTheme.dashboardStroke, lineWidth: 1)
         )
-    }
-}
-
-struct ProjectsSection: View {
-    @Environment(\.managedObjectContext) private var viewContext
-    let projects: [Project]
-    let onSelect: (Project) -> Void
-    let onDelete: (Project) -> Void
-    let onAdd: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("Projects")
-                    .font(.headline)
-                Spacer()
-                Button("New Project") {
-                    onAdd()
-                }
-            }
-            ForEach(projects, id: \.objectID) { project in
-                HStack {
-                    Circle()
-                        .fill(Color(hex: project.colorHex) ?? Color.accentColor)
-                        .frame(width: 8, height: 8)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(project.name ?? "Project")
-                            .font(.subheadline)
-                        Text(project.company?.name ?? "Company")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    Spacer()
-                    Toggle("Active", isOn: Binding(
-                        get: { project.isActive },
-                        set: { newValue in
-                            project.isActive = newValue
-                            try? viewContext.save()
-                        }
-                    ))
-                    .labelsHidden()
-                    Button {
-                        project.isArchived.toggle()
-                        if project.isArchived {
-                            project.isActive = false
-                        }
-                        try? viewContext.save()
-                    } label: {
-                        Image(systemName: project.isArchived ? "tray.and.arrow.up" : "archivebox")
-                    }
-                    .buttonStyle(.borderless)
-                    Button {
-                        onDelete(project)
-                    } label: {
-                        Image(systemName: "trash")
-                    }
-                    .buttonStyle(.borderless)
-                }
-                .cardStyle()
-                .onTapGesture {
-                    onSelect(project)
-                }
-            }
-        }
     }
 }
 

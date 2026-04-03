@@ -9,37 +9,126 @@ enum SummaryRange: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
+func summaryDateInterval(range: SummaryRange, now: Date) -> DateInterval {
+    let calendar = Calendar.current
+    switch range {
+    case .day:
+        let start = calendar.startOfDay(for: now)
+        let end = calendar.date(byAdding: .day, value: 1, to: start) ?? now
+        return DateInterval(start: start, end: end)
+    case .week:
+        let weekStart = calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? now
+        let end = calendar.date(byAdding: .day, value: 7, to: weekStart) ?? now
+        return DateInterval(start: weekStart, end: end)
+    case .month:
+        let monthStart = calendar.dateInterval(of: .month, for: now)?.start ?? now
+        let end = calendar.date(byAdding: .month, value: 1, to: monthStart) ?? now
+        return DateInterval(start: monthStart, end: end)
+    case .year:
+        let yearStart = calendar.dateInterval(of: .year, for: now)?.start ?? now
+        let end = calendar.date(byAdding: .year, value: 1, to: yearStart) ?? now
+        return DateInterval(start: yearStart, end: end)
+    }
+}
+
 struct SummaryView: View {
-    @EnvironmentObject private var sessionController: SessionController
+    @AppStorage("showEarnings") private var showEarnings = false
+    @AppStorage("currencyCode") private var currencyCode = CurrencyOption.usd.rawValue
+
     @Binding var range: SummaryRange
     let sessions: [Session]
+    let projects: [Project]
+
+    @State private var showRangePicker = false
+    @State private var useCustomRange = false
+    @State private var customStart = Calendar.current.startOfDay(for: Date())
+    @State private var customEnd = Calendar.current.startOfDay(for: Date())
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Picker("Range", selection: $range) {
-                ForEach(SummaryRange.allCases) { option in
-                    Text(option.rawValue).tag(option)
-                }
-            }
-            .pickerStyle(.segmented)
+        let now = Date()
+        let interval = resolvedInterval(now: now)
+        let total = TimeMetrics.totalDuration(sessions: sessions, in: interval, now: now)
+        let earnings = TimeMetrics.earnings(sessions: sessions, projects: projects, in: interval, now: now)
 
-            RangeChartView(range: range, sessions: sessions)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .bottom, spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Range")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    SegmentedTabs(items: SummaryRange.allCases, selection: $range) { $0.rawValue }
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Period")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Button {
+                        showRangePicker.toggle()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "calendar")
+                            Text(rangeLabel(interval: interval))
+                                .lineLimit(1)
+                            Spacer(minLength: 8)
+                            Image(systemName: "chevron.down")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .font(.callout)
+                        .foregroundColor(.primary)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+                        .frame(minWidth: 220)
+                        .background(AppTheme.cardBackground)
+                        .clipShape(Capsule())
+                        .overlay(
+                            Capsule()
+                                .stroke(Color(NSColor.separatorColor).opacity(0.6), lineWidth: 1)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .popover(isPresented: $showRangePicker) {
+                        CalendarRangePicker(start: $customStart, end: $customEnd, useCustomRange: $useCustomRange)
+                            .frame(width: 320)
+                            .padding(16)
+                    }
+                }
+
+                Spacer()
+
+                Toggle("Show Earnings", isOn: $showEarnings)
+                    .toggleStyle(.switch)
+            }
+
+            SimpleRangeChart(sessions: sessions, interval: interval)
+                .frame(height: 110)
 
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Total")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    Text(TimeFormatter.hoursMinutes(from: totalDuration))
+                    Text(TimeFormatter.hoursMinutes(from: total))
                         .font(.title2)
                         .fontWeight(.semibold)
+
+                    if showEarnings {
+                        Text("Earnings")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 6)
+                        Text(CurrencyFormatter.string(from: earnings, currencyCode: currencyCode))
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                    }
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text(label)
+                    Text("Selected Range")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    Text(dateRangeDescription)
+                    Text(dateRangeDescription(interval: interval))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -48,66 +137,51 @@ struct SummaryView: View {
         }
     }
 
-    private var totalDuration: TimeInterval {
-        let interval = dateInterval
-        return sessions.reduce(0) { partial, session in
-            let segments = (session.segments as? Set<SessionSegment>) ?? []
-            let segmentTotal = segments.reduce(0) { subtotal, segment in
-                let start = segment.startAt ?? sessionController.now
-                let end = segment.endAt ?? sessionController.now
-                if end <= interval.start || start >= interval.end {
-                    return subtotal
-                }
-                let clampedStart = max(start, interval.start)
-                let clampedEnd = min(end, interval.end)
-                return subtotal + max(0, clampedEnd.timeIntervalSince(clampedStart))
+    private func resolvedInterval(now: Date) -> DateInterval {
+        if useCustomRange {
+            let calendar = Calendar.current
+            let start = calendar.startOfDay(for: min(customStart, customEnd))
+            var end = calendar.startOfDay(for: max(customStart, customEnd))
+            if calendar.isDate(start, inSameDayAs: end) {
+                end = calendar.date(byAdding: .day, value: 1, to: end) ?? end
             }
-            return partial + segmentTotal
-        }
-    }
-
-    private var dateInterval: DateInterval {
-        let calendar = Calendar.current
-        let now = sessionController.now
-        switch range {
-        case .day:
-            let start = calendar.startOfDay(for: now)
-            let end = calendar.date(byAdding: .day, value: 1, to: start) ?? now
             return DateInterval(start: start, end: end)
-        case .week:
-            let weekStart = calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? now
-            let end = calendar.date(byAdding: .day, value: 7, to: weekStart) ?? now
-            return DateInterval(start: weekStart, end: end)
-        case .month:
-            let monthStart = calendar.dateInterval(of: .month, for: now)?.start ?? now
-            let end = calendar.date(byAdding: .month, value: 1, to: monthStart) ?? now
-            return DateInterval(start: monthStart, end: end)
-        case .year:
-            let yearStart = calendar.dateInterval(of: .year, for: now)?.start ?? now
-            let end = calendar.date(byAdding: .year, value: 1, to: yearStart) ?? now
-            return DateInterval(start: yearStart, end: end)
         }
+        return summaryDateInterval(range: range, now: now)
     }
 
-    private var label: String {
-        switch range {
-        case .day: return "Today"
-        case .week: return "This Week"
-        case .month: return "This Month"
-        case .year: return "This Year"
-        }
-    }
-
-    private var dateRangeDescription: String {
+    private func rangeLabel(interval: DateInterval) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
-        return "\(formatter.string(from: dateInterval.start)) – \(formatter.string(from: dateInterval.end))"
+        let display = displayRange(interval: interval)
+        if useCustomRange {
+            return "\(formatter.string(from: customStart)) – \(formatter.string(from: customEnd))"
+        }
+        return "\(formatter.string(from: display.start)) – \(formatter.string(from: display.end))"
     }
+
+    private func dateRangeDescription(interval: DateInterval) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        let display = displayRange(interval: interval)
+        if useCustomRange {
+            return "\(formatter.string(from: customStart)) – \(formatter.string(from: customEnd))"
+        }
+        return "\(formatter.string(from: display.start)) – \(formatter.string(from: display.end))"
+    }
+
+    private func displayRange(interval: DateInterval) -> (start: Date, end: Date) {
+        let calendar = Calendar.current
+        let start = interval.start
+        let end = calendar.date(byAdding: .day, value: -1, to: interval.end) ?? interval.end
+        return (start, end)
+    }
+
 }
 
 #Preview {
-    SummaryView(range: .constant(.week), sessions: [])
-        .environmentObject(SessionController(viewContext: PersistenceController.preview.container.viewContext))
+    SummaryView(range: .constant(.week), sessions: [], projects: [])
         .padding()
 }

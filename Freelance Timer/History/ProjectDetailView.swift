@@ -3,8 +3,9 @@ import CoreData
 
 struct ProjectDetailView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @EnvironmentObject private var sessionController: SessionController
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("showEarnings") private var showEarnings = false
+    @AppStorage("currencyCode") private var currencyCode = CurrencyOption.usd.rawValue
 
     let project: Project
     @State private var range: SummaryRange = .month
@@ -39,32 +40,47 @@ struct ProjectDetailView: View {
                 .keyboardShortcut(.defaultAction)
             }
 
-            Picker("Tab", selection: $activeTab) {
-                ForEach(DetailTab.allCases) { tab in
-                    Text(tab.rawValue).tag(tab)
-                }
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Tab")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                SegmentedTabs(items: DetailTab.allCases, selection: $activeTab) { $0.rawValue }
             }
-            .pickerStyle(.segmented)
 
             switch activeTab {
             case .overview:
-                Picker("Range", selection: $range) {
-                    ForEach(SummaryRange.allCases) { option in
-                        Text(option.rawValue).tag(option)
-                    }
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Range")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    SegmentedTabs(items: SummaryRange.allCases, selection: $range) { $0.rawValue }
                 }
-                .pickerStyle(.segmented)
 
-                RangeChartView(range: range, sessions: sessions)
+                let interval = summaryDateInterval(range: range, now: Date())
+                SimpleRangeChart(sessions: sessions, interval: interval)
+                    .frame(height: 110)
 
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Total")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        Text(TimeFormatter.hoursMinutes(from: totalDuration))
+                        let now = Date()
+                        let interval = summaryDateInterval(range: range, now: now)
+                        let duration = TimeMetrics.totalDuration(sessions: sessions, in: interval, now: now)
+                        Text(TimeFormatter.hoursMinutes(from: duration))
                             .font(.title2)
                             .fontWeight(.semibold)
+                        if showEarnings {
+                            let earnings = TimeMetrics.projectEarnings(project: project, sessions: sessions, in: interval, now: now)
+                            Text("Earnings")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.top, 6)
+                            Text(CurrencyFormatter.string(from: earnings, currencyCode: currencyCode))
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                        }
                     }
                     Spacer()
                     Text("\(sessions.count) sessions")
@@ -119,12 +135,6 @@ struct ProjectDetailView: View {
         let set = project.sessions as? Set<Session> ?? []
         return set.sorted { lhs, rhs in
             sessionStart(lhs) > sessionStart(rhs)
-        }
-    }
-
-    private var totalDuration: TimeInterval {
-        sessions.reduce(0) { partial, session in
-            partial + sessionController.totalDuration(for: session, now: sessionController.now)
         }
     }
 

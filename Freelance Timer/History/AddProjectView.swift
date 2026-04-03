@@ -3,6 +3,7 @@ import SwiftUI
 struct AddProjectView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("currencyCode") private var currencyCode = CurrencyOption.usd.rawValue
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)],
@@ -15,6 +16,8 @@ struct AddProjectView: View {
     @State private var projectName: String = ""
     @State private var color: ProjectColor = .blue
     @State private var isActive = true
+    @State private var hourlyRate: Double = 0
+    @State private var monthlyFee: Double = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -81,6 +84,43 @@ struct AddProjectView: View {
 
             Toggle("Active", isOn: $isActive)
 
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Rates")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Hourly Rate")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        TextField("0.00", value: $hourlyRate, format: .number.precision(.fractionLength(2)))
+                            .textFieldStyle(.roundedBorder)
+                    }
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Monthly Fee (optional)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        TextField("0.00", value: $monthlyFee, format: .number.precision(.fractionLength(2)))
+                            .textFieldStyle(.roundedBorder)
+                    }
+                }
+                HStack(spacing: 8) {
+                    Text("Currency")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Picker("Currency", selection: $currencyCode) {
+                        ForEach(CurrencyOption.allCases) { option in
+                            Text(option.displayName).tag(option.rawValue)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                }
+                Text("Hourly is for time-based billing. Monthly is for retainers.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
             HStack {
                 Spacer()
                 Button("Cancel") {
@@ -123,6 +163,8 @@ struct AddProjectView: View {
         project.isArchived = false
         project.colorHex = color.rawValue
         project.company = company
+        project.hourlyRate = hourlyRate
+        project.monthlyFee = monthlyFee
 
         try? viewContext.save()
         dismiss()

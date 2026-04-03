@@ -22,20 +22,34 @@
 
 ## Screenshots
 
-![Menubar](screenshots/menubar.png)
+![Menubar Dashboard](screenshots/menubar.png)
 ![Main Window](screenshots/main.png)
 ![Project Detail](screenshots/project-detail.png)
 
+### Screenshot Guide
+
+**Best option (recommended):** macOS Screenshot tool  
+1. Launch the app from Xcode so it runs in Debug.
+2. Arrange the menubar popover or main window.
+3. Press `Shift + Command + 4` (or `Shift + Command + 5` for the full HUD).
+4. Save into `screenshots/` with the names above.
+
+**Xcode option:**  
+Xcode doesn’t have a dedicated macOS UI screenshot tool like iOS Simulator. The most reliable workflow is still the macOS Screenshot tool while the app is running from Xcode.
+
 ## Features
 
-- Menubar stopwatch with Start / Pause / Resume / Finish
+- Menubar dashboard with live timer, quick actions, and recent sessions
 - Project + company management with color tags
+- Hourly rate and optional monthly retainer per project
+- Earnings toggle with currency selection
 - Manual session entry and editable sessions
-- Day / Week / Month / Year summaries with charts
+- Current / previous Day, Week, Month, Year summaries with charts
 - Project detail view with stats + session list
 - First-run onboarding
 - Local Core Data storage (offline-first)
 - CSV export and full data reset
+- Backup export + import (JSON) with merge/replace options
 
 ## Getting Started
 
@@ -51,13 +65,16 @@
 ## Usage
 
 1. Complete onboarding (create your first company + project).
-2. Start the timer from the menubar.
-3. Pause or finish when you’re done.
-4. Use the main window to view summaries, edit sessions, or manage projects.
+2. Set your currency in `Settings`.
+3. Start the timer from the menubar.
+4. Pause or finish when you’re done.
+5. Use the main window to view summaries, edit sessions, or manage projects.
 
 ## Data Management
 
 - **Export CSV:** `Settings → Export CSV…`
+- **Export Backup:** `Settings → Export Backup…`
+- **Import Backup:** `Settings → Import Backup…` (Replace or Merge)
 - **Reset All Data:** `Settings → Reset All Data…`
 
 ## Download DMG

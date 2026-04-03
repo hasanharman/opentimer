@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
+
+      - name: Build (Release, unsigned)
+        run: |
+          xcodebuild \
+            -project "Freelance Timer.xcodeproj" \
+            -scheme "Freelance Timer" \
+            -configuration Release \
+            -destination "platform=macOS" \
+            -derivedDataPath /tmp/DerivedData \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Create DMG
+        run: |
+          mkdir -p /tmp/FreelanceTimerDMG
+          cp -R "/tmp/DerivedData/Build/Products/Release/Freelance Timer.app" /tmp/FreelanceTimerDMG/
+
+          create-dmg \
+            --volname "Freelance Timer" \
+            --window-pos 200 120 \
+            --window-size 660 400 \
+            --icon-size 120 \
+            --text-size 14 \
+            --icon "Freelance Timer.app" 180 200 \
+            --hide-extension "Freelance Timer.app" \
+            --app-drop-link 480 200 \
+            "Freelance-Timer-${{ github.ref_name }}.dmg" \
+            "/tmp/FreelanceTimerDMG"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: Freelance-Timer-${{ github.ref_name }}.dmg

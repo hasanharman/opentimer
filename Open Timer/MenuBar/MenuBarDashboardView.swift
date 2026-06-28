@@ -56,7 +56,7 @@ struct MenuBarDashboardView: View {
 
     private var header: some View {
         HStack(spacing: 8) {
-            Text("Freelance Timer")
+            Text("Open Timer")
                 .font(.headline)
             Spacer()
             Button {

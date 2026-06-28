@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const alt =
-  "Freelance Timer — track freelance work right from your menu bar";
+  "Open Timer — track freelance work right from your menu bar";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -101,7 +101,7 @@ export default function Image() {
               fontWeight: 600,
             }}
           >
-            <span>Freelance Timer</span>
+            <span>Open Timer</span>
             <span style={{ color: "rgba(255,255,255,0.4)" }}>×</span>
           </div>
 

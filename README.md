@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="screenshots/logo.png" alt="Freelance Timer Logo" width="160" />
-  <h1>Freelance Timer</h1>
+  <img src="screenshots/logo.png" alt="Open Timer Logo" width="160" />
+  <h1>Open Timer</h1>
   <p><strong>A minimal macOS menubar app to track freelance work sessions with projects, summaries, and local-only storage.</strong></p>
 
   <p>
@@ -68,7 +68,7 @@ Xcode doesn’t have a dedicated macOS UI screenshot tool like iOS Simulator. Th
 - Xcode 15+
 
 ### Run Locally
-1. Open `Freelance Timer.xcodeproj` in Xcode.
+1. Open `Open Timer.xcodeproj` in Xcode.
 2. Select **My Mac** as the destination.
 3. Build & Run.
 
@@ -91,7 +91,7 @@ Xcode doesn’t have a dedicated macOS UI screenshot tool like iOS Simulator. Th
 
 Download the latest DMG from GitHub Releases:
 
-[Latest Release (DMG)](https://github.com/hasanharman/freelance-timer/releases/latest)
+[Latest Release (DMG)](https://github.com/hasanharman/open-timer/releases/latest)
 
 ### Automated Releases
 
@@ -111,5 +111,5 @@ The workflow will build a Release app, create a DMG, and attach it to a new GitH
 
 ## Logo & Assets
 
-- App icon assets live in `Freelance Timer/Assets.xcassets/AppIcon.appiconset`.
+- App icon assets live in `Open Timer/Assets.xcassets/AppIcon.appiconset`.
 - Place a 1024×1024 logo PNG at `screenshots/logo.png` for the README header.

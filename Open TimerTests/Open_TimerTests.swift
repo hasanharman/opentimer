@@ -1,14 +1,14 @@
 //
-//  Freelance_TimerTests.swift
-//  Freelance TimerTests
+//  Open_TimerTests.swift
+//  Open TimerTests
 //
 //  Created by Hasan Harman on 21.03.2026.
 //
 
 import Testing
-@testable import Freelance_Timer
+@testable import Open_Timer
 
-struct Freelance_TimerTests {
+struct Open_TimerTests {
 
     @Test func example() async throws {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.

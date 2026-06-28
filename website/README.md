@@ -1,6 +1,6 @@
-# Freelance Timer — Website
+# Open Timer — Website
 
-Marketing landing page for the Freelance Timer macOS app. Built with Next.js
+Marketing landing page for the Open Timer macOS app. Built with Next.js
 (App Router), Tailwind CSS v4, and Motion.
 
 The signature hero is a faux macOS desktop with a **live, ticking** recreation

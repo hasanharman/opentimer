@@ -1,13 +1,13 @@
 //
-//  Freelance_TimerUITests.swift
-//  Freelance TimerUITests
+//  Open_TimerUITests.swift
+//  Open TimerUITests
 //
 //  Created by Hasan Harman on 21.03.2026.
 //
 
 import XCTest
 
-final class Freelance_TimerUITests: XCTestCase {
+final class Open_TimerUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

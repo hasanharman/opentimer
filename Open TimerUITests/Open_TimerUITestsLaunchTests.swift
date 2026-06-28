@@ -1,13 +1,13 @@
 //
-//  Freelance_TimerUITestsLaunchTests.swift
-//  Freelance TimerUITests
+//  Open_TimerUITestsLaunchTests.swift
+//  Open TimerUITests
 //
 //  Created by Hasan Harman on 21.03.2026.
 //
 
 import XCTest
 
-final class Freelance_TimerUITestsLaunchTests: XCTestCase {
+final class Open_TimerUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

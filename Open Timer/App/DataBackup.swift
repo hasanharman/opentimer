@@ -50,7 +50,7 @@ enum DataBackup {
     static func exportBackup(context: NSManagedObjectContext) throws -> Bool {
         let panel = NSSavePanel()
         panel.allowedContentTypes = [UTType.json]
-        panel.nameFieldStringValue = "freelance-timer-backup.json"
+        panel.nameFieldStringValue = "open-timer-backup.json"
         guard panel.runModal() == .OK, let url = panel.url else { return false }
 
         let payload = try buildPayload(context: context)

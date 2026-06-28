@@ -1,7 +1,7 @@
-const repo = "https://github.com/hasanharman/freelance-timer";
+const repo = "https://github.com/hasanharman/open-timer";
 
 export const site = {
-  name: "Freelance Timer",
+  name: "Open Timer",
   version: "v1.0",
   repo,
   releasesLatest: `${repo}/releases/latest`,

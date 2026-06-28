@@ -30,9 +30,9 @@ export function Hero({
       <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
       <div className="pointer-events-none absolute bottom-0 right-0 h-[28rem] w-[28rem] rounded-full bg-[#0a2a78]/40 blur-3xl" />
 
-      {/* hero copy — anchored to the bottom of the desktop */}
-      <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-30px)] max-w-6xl flex-col justify-end px-6 pb-12 pt-24">
-        <div className="max-w-md text-white">
+      {/* hero copy — bottom on mobile (under the popover), centered on desktop */}
+      <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-30px)] max-w-6xl flex-col justify-end px-6 pb-12 pt-24 lg:justify-center lg:py-0">
+        <div className="max-w-lg text-white">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[12px] font-medium text-white/90 backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-[#34c759]" />
             Free &amp; open source · macOS 13+

@@ -44,5 +44,14 @@ website/
 
 ## Deploy (Vercel)
 
-Set the project root to `website/` (or run `vercel` from inside it). It's a fully
-static export — no server, no env vars required.
+1. Import the repo at [vercel.com](https://vercel.com) → **Add New… → Project**.
+2. Set **Root Directory** to `website` (the app lives in this subfolder).
+3. Vercel auto-detects Next.js + pnpm — accept the defaults and **Deploy**.
+
+It runs as a standard Next.js app: the GitHub star count is fetched in a server
+component and revalidates hourly (`revalidate: 3600`), so it stays fresh without
+manual rebuilds.
+
+**Custom domain:** add it under the project's **Settings → Domains**, then set an
+env var `NEXT_PUBLIC_SITE_URL=https://yourdomain.com` so OG/canonical URLs match.
+Without it, the metadata falls back to the Vercel production URL automatically.

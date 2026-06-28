@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-const siteUrl = "https://freelancetimer.app";
+// Resolve the canonical URL: a custom domain if set, otherwise Vercel's
+// production URL, falling back to the intended domain for local builds.
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "https://freelancetimer.app");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

@@ -27,26 +27,20 @@ pnpm start
 website/
 ├── app/
 │   ├── layout.tsx        # metadata, fonts, <html>
-│   ├── page.tsx          # composes the sections
+│   ├── page.tsx          # menu bar + hero
 │   └── globals.css       # Tailwind v4 theme + helpers
 ├── components/
-│   ├── Nav.tsx
-│   ├── Hero.tsx          # macOS desktop scene + menu bar
-│   ├── TimerWidget.tsx   # live menu bar popover (the hero centerpiece)
-│   ├── Features.tsx
-│   ├── Screenshots.tsx   # uses /public/screenshots/*
-│   ├── Download.tsx
-│   └── Footer.tsx
-├── lib/site.ts           # links, version, feature copy (edit here)
-└── public/screenshots/   # copied from ../screenshots
+│   ├── MacMenuBar.tsx    # full-width macOS menu bar with live clock
+│   ├── Hero.tsx          # full-screen desktop scene
+│   └── TimerWidget.tsx   # live menu bar popover (the hero centerpiece)
+└── lib/site.ts           # links, version, requirements (edit here)
 ```
 
 ## Editing content
 
-- Links, version, requirements, and feature copy live in `lib/site.ts`.
-- Update the download link by changing `releasesLatest` there.
-- Screenshots are copied from the repo's `../screenshots`. Re-copy when they
-  change: `cp ../screenshots/{main,menubar,project-detail}.png public/screenshots/`
+- Links, version, and requirements live in `lib/site.ts`.
+- Update the download link by changing `repo` there (`releasesLatest` is derived
+  from it).
 
 ## Deploy (Vercel)
 

@@ -7,17 +7,12 @@
     Consolas, monospace;
 
   --color-accent: #0a84ff;
-  --color-accent-600: #007aff;
   --color-ink: #0b0d12;
   --color-muted: #5b6472;
-
-  --color-surface: #ffffff;
-  --color-surface-2: #f6f8fb;
-  --color-border-subtle: #e7ebf0;
 }
 
 :root {
-  --bg: #ffffff;
+  --bg: #071e63;
 }
 
 html {
@@ -56,13 +51,6 @@ body {
     radial-gradient(130% 130% at 12% -10%, #1f63f5 0%, #1646c6 34%, #0d2f93 64%, #071e63 100%);
 }
 
-/* faint dotted/cross page backdrop like product sites */
-.page-grid {
-  background-image:
-    radial-gradient(circle at center, rgba(11, 13, 18, 0.045) 1px, transparent 1px);
-  background-size: 22px 22px;
-}
-
 @keyframes float-slow {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
@@ -70,3 +58,26 @@ body {
 .float-slow {
   animation: float-slow 6s ease-in-out infinite;
 }
+
+/* one-shot entrance for the timer popover, as if it dropped from the menu bar */
+@keyframes drop-in {
+  from { opacity: 0; transform: translateY(-14px); }
+}
+.drop-in {
+  animation: drop-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* one-shot launch for the main window */
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+}
+.scale-in {
+  animation: scale-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* scale the (fixed-width) app window to fit the viewport — zoom reflows layout */
+.app-scale { zoom: 0.5; }
+@media (min-width: 480px) { .app-scale { zoom: 0.62; } }
+@media (min-width: 640px) { .app-scale { zoom: 0.78; } }
+@media (min-width: 1024px) { .app-scale { zoom: 0.86; } }
+@media (min-width: 1280px) { .app-scale { zoom: 1; } }

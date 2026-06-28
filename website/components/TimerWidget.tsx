@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Play, Pause, ChevronsUpDown } from "lucide-react";
+import { Play, Pause, ChevronsUpDown, SquareArrowOutUpRight } from "lucide-react";
 
 function format(total: number) {
   const h = Math.floor(total / 3600)
@@ -27,7 +27,13 @@ const recent = [
  * A faithful, *live* recreation of the app's menu bar popover.
  * The timer actually runs when "playing" so the hero feels alive.
  */
-export function TimerWidget() {
+export function TimerWidget({
+  onOpenApp,
+  onClose,
+}: {
+  onOpenApp?: () => void;
+  onClose?: () => void;
+}) {
   const [seconds, setSeconds] = useState(0);
   const [running, setRunning] = useState(true);
 
@@ -50,9 +56,13 @@ export function TimerWidget() {
         <span className="text-[13px] font-semibold tracking-tight">
           Freelance Timer
         </span>
-        <span className="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[11px] text-white/70">
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          className="grid h-5 w-5 place-items-center rounded-full bg-white/10 text-[12px] text-white/70 transition hover:bg-white/20 hover:text-white"
+        >
           ×
-        </span>
+        </button>
       </div>
 
       {/* project picker */}
@@ -75,7 +85,7 @@ export function TimerWidget() {
         <button
           onClick={() => setRunning((r) => !r)}
           aria-label={running ? "Pause timer" : "Start timer"}
-          className="grid h-11 w-11 place-items-center rounded-full bg-[#0a84ff] text-white shadow-lg shadow-[#0a84ff]/30 transition active:scale-95"
+          className="grid h-11 w-11 place-items-center rounded-full bg-accent text-white shadow-lg shadow-accent/30 transition active:scale-95"
         >
           {running ? (
             <Pause className="h-5 w-5 fill-current" />
@@ -97,7 +107,7 @@ export function TimerWidget() {
           {weekBars.map((h, i) => (
             <div
               key={i}
-              className="flex-1 rounded-[3px] bg-[#0a84ff]"
+              className="flex-1 rounded-[3px] bg-accent"
               style={{ height: `${h}%`, opacity: i === 2 ? 1 : 0.55 }}
             />
           ))}
@@ -122,6 +132,15 @@ export function TimerWidget() {
           </li>
         ))}
       </ul>
+
+      {/* open the real app */}
+      <button
+        onClick={onOpenApp}
+        className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-lg bg-white/[0.07] py-2 text-[12px] font-medium text-white/80 ring-1 ring-white/10 transition hover:bg-white/[0.12] hover:text-white"
+      >
+        Open app
+        <SquareArrowOutUpRight className="h-3 w-3" />
+      </button>
     </div>
   );
 }

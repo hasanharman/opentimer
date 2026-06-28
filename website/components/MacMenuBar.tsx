@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Apple, Wifi, BatteryMedium, Search, Timer } from "lucide-react";
+import { Wifi, BatteryMedium, Search, Timer } from "lucide-react";
+import { AppleLogo } from "./AppleLogo";
 import { site } from "@/lib/site";
 
 function useClock() {
@@ -27,15 +28,26 @@ function useClock() {
  * Full-width macOS menu bar. The Freelance Timer status item on the right is
  * "open" (highlighted) — the popover drops down from it, just like the real app.
  */
-export function MacMenuBar() {
+export function MacMenuBar({
+  active,
+  onTimerClick,
+}: {
+  active?: boolean;
+  onTimerClick?: () => void;
+}) {
   const clock = useClock();
 
   return (
-    <div className="sticky top-0 z-50 flex h-[30px] items-center justify-between bg-black/25 px-4 text-[13px] font-medium text-white backdrop-blur-md">
-      {/* left: apple + focused app */}
-      <div className="flex items-center gap-4">
-        <Apple className="h-4 w-4 fill-white" />
+    <div className="sticky top-0 z-50 flex h-[30px] items-center justify-between rounded-none border-0 bg-[#1b1b1d] px-4 text-[13px] text-white">
+      {/* left: apple + focused app + its menus */}
+      <div className="flex items-center gap-5">
+        <AppleLogo className="h-[17px] w-[17px]" />
         <span className="font-semibold tracking-tight">{site.name}</span>
+        {["File", "Edit", "View", "Window", "Help"].map((m) => (
+          <span key={m} className="hidden text-white/85 sm:inline">
+            {m}
+          </span>
+        ))}
       </div>
 
       {/* right: status items — the Timer item is the one that's open */}
@@ -43,9 +55,15 @@ export function MacMenuBar() {
         <Search className="hidden h-3.5 w-3.5 sm:block" />
         <BatteryMedium className="hidden h-[18px] w-[18px] sm:block" />
         <Wifi className="hidden h-4 w-4 sm:block" />
-        <span className="-mx-1 flex items-center gap-1.5 rounded-md bg-white/20 px-1.5 py-0.5">
+        <button
+          onClick={onTimerClick}
+          aria-label="Freelance Timer menu"
+          className={`-mx-1 flex items-center gap-1.5 rounded-md px-1.5 py-0.5 transition ${
+            active ? "bg-white/20" : "hover:bg-white/10"
+          }`}
+        >
           <Timer className="h-[15px] w-[15px]" />
-        </span>
+        </button>
         <span className="tabular min-w-[92px] text-right text-[12px]">
           {clock || " "}
         </span>

@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Monaco,
+    Consolas, monospace;
+
+  --color-accent: #0a84ff;
+  --color-accent-600: #007aff;
+  --color-ink: #0b0d12;
+  --color-muted: #5b6472;
+
+  --color-surface: #ffffff;
+  --color-surface-2: #f6f8fb;
+  --color-border-subtle: #e7ebf0;
+}
+
+:root {
+  --bg: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* selection */
+::selection {
+  background: rgba(10, 132, 255, 0.18);
+}
+
+/* utility: subtle grid / glow helpers */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* hero wallpaper gradient (matches the app's blue) */
+.wallpaper {
+  background:
+    radial-gradient(130% 130% at 12% -10%, #1f63f5 0%, #1646c6 34%, #0d2f93 64%, #071e63 100%);
+}
+
+/* faint dotted/cross page backdrop like product sites */
+.page-grid {
+  background-image:
+    radial-gradient(circle at center, rgba(11, 13, 18, 0.045) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}

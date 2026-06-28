@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  Freelance Timer
+//  Open Timer
 //
 //  Created by Hasan Harman on 21.03.2026.
 //

@@ -20,7 +20,7 @@ const weekBars = [70, 42, 96, 30, 58, 18, 8];
 const recent = [
   { name: "JFK", color: "#0a84ff", time: "2h 14m" },
   { name: "Acme Redesign", color: "#34c759", time: "1h 02m" },
-  { name: "Freelance Timer", color: "#30d158", time: "0h 46m" },
+  { name: "Open Timer", color: "#30d158", time: "0h 46m" },
 ];
 
 /**
@@ -54,7 +54,7 @@ export function TimerWidget({
       {/* header */}
       <div className="mb-4 flex items-center justify-between">
         <span className="text-[13px] font-semibold tracking-tight">
-          Freelance Timer
+          Open Timer
         </span>
         <button
           onClick={onClose}
@@ -70,7 +70,7 @@ export function TimerWidget({
         Project
       </label>
       <button className="mb-4 flex w-full items-center justify-between rounded-lg bg-white/[0.07] px-3 py-2 text-[12px] font-medium ring-1 ring-white/10">
-        <span>Github · Freelance Timer</span>
+        <span>Github · Open Timer</span>
         <ChevronsUpDown className="h-3.5 w-3.5 text-white/45" />
       </button>
 

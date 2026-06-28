@@ -121,7 +121,7 @@ enum DataExporter {
     static func exportSessionsCSV(context: NSManagedObjectContext) throws -> Bool {
         let panel = NSSavePanel()
         panel.allowedContentTypes = [UTType.commaSeparatedText]
-        panel.nameFieldStringValue = "freelance-timer.csv"
+        panel.nameFieldStringValue = "open-timer.csv"
         guard panel.runModal() == .OK, let url = panel.url else { return false }
         let request = NSFetchRequest<Session>(entityName: "Session")
         let sessions = (try? context.fetch(request)) ?? []

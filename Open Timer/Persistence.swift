@@ -1,6 +1,6 @@
 //
 //  Persistence.swift
-//  Freelance Timer
+//  Open Timer
 //
 //  Created by Hasan Harman on 21.03.2026.
 //
@@ -51,7 +51,7 @@ struct PersistenceController {
     let container: NSPersistentContainer
 
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "Freelance_Timer")
+        container = NSPersistentContainer(name: "Open_Timer")
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }

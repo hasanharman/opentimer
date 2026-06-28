@@ -22,7 +22,7 @@ const nav = [
 ];
 
 const activities = [
-  { name: "Freelance Timer", company: "Github", color: "#30d158" },
+  { name: "Open Timer", company: "Github", color: "#30d158" },
   { name: "JFK", company: "Grit", color: "#0a84ff" },
   { name: "BA", company: "Up", color: "#ff453a" },
 ];
@@ -56,7 +56,7 @@ export function AppWindow({
         </div>
         <PanelLeft className="ml-1 h-3.5 w-3.5 text-white/40" />
         <span className="text-[12px] font-semibold tracking-tight">
-          Freelance Timer
+          Open Timer
         </span>
       </div>
 

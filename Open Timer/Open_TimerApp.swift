@@ -1,6 +1,6 @@
 //
-//  Freelance_TimerApp.swift
-//  Freelance Timer
+//  Open_TimerApp.swift
+//  Open Timer
 //
 //  Created by Hasan Harman on 21.03.2026.
 //
@@ -16,7 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let completed = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
             if !completed {
                 NSApp.activate(ignoringOtherApps: true)
-                if let window = NSApp.windows.first(where: { $0.title == "Freelance Timer" }) {
+                if let window = NSApp.windows.first(where: { $0.title == "Open Timer" }) {
                     window.makeKeyAndOrderFront(nil)
                 } else {
                     NSApp.windows.first?.makeKeyAndOrderFront(nil)
@@ -27,7 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 @main
-struct Freelance_TimerApp: App {
+struct Open_TimerApp: App {
     let persistenceController = PersistenceController.shared
     @StateObject private var sessionController: SessionController
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
@@ -48,7 +48,7 @@ struct Freelance_TimerApp: App {
         }
         .menuBarExtraStyle(.window)
 
-        WindowGroup("Freelance Timer", id: "main") {
+        WindowGroup("Open Timer", id: "main") {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(sessionController)

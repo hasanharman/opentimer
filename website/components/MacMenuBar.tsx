@@ -25,7 +25,7 @@ function useClock() {
 }
 
 /**
- * Full-width macOS menu bar. The Freelance Timer status item on the right is
+ * Full-width macOS menu bar. The Open Timer status item on the right is
  * "open" (highlighted) — the popover drops down from it, just like the real app.
  */
 export function MacMenuBar({
@@ -57,7 +57,7 @@ export function MacMenuBar({
         <Wifi className="hidden h-4 w-4 sm:block" />
         <button
           onClick={onTimerClick}
-          aria-label="Freelance Timer menu"
+          aria-label="Open Timer menu"
           className={`-mx-1 flex items-center gap-1.5 rounded-md px-1.5 py-0.5 transition ${
             active ? "bg-white/20" : "hover:bg-white/10"
           }`}

@@ -12,37 +12,37 @@
 			containerPortal = 5F5CC4F62F6EBE2A00DB09C9 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 5F5CC4FD2F6EBE2A00DB09C9;
-			remoteInfo = "Freelance Timer";
+			remoteInfo = "Open Timer";
 		};
 		5F5CC51B2F6EBE2C00DB09C9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5F5CC4F62F6EBE2A00DB09C9 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 5F5CC4FD2F6EBE2A00DB09C9;
-			remoteInfo = "Freelance Timer";
+			remoteInfo = "Open Timer";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		5F5CC4FE2F6EBE2A00DB09C9 /* Freelance Timer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Freelance Timer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		5F5CC5102F6EBE2C00DB09C9 /* Freelance TimerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Freelance TimerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		5F5CC51A2F6EBE2C00DB09C9 /* Freelance TimerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Freelance TimerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F5CC4FE2F6EBE2A00DB09C9 /* Open Timer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Open Timer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F5CC5102F6EBE2C00DB09C9 /* Open TimerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Open TimerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F5CC51A2F6EBE2C00DB09C9 /* Open TimerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Open TimerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		5F5CC5002F6EBE2A00DB09C9 /* Freelance Timer */ = {
+		5F5CC5002F6EBE2A00DB09C9 /* Open Timer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Freelance Timer";
+			path = "Open Timer";
 			sourceTree = "<group>";
 		};
-		5F5CC5132F6EBE2C00DB09C9 /* Freelance TimerTests */ = {
+		5F5CC5132F6EBE2C00DB09C9 /* Open TimerTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Freelance TimerTests";
+			path = "Open TimerTests";
 			sourceTree = "<group>";
 		};
-		5F5CC51D2F6EBE2C00DB09C9 /* Freelance TimerUITests */ = {
+		5F5CC51D2F6EBE2C00DB09C9 /* Open TimerUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Freelance TimerUITests";
+			path = "Open TimerUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,9 +75,9 @@
 		5F5CC4F52F6EBE2A00DB09C9 = {
 			isa = PBXGroup;
 			children = (
-				5F5CC5002F6EBE2A00DB09C9 /* Freelance Timer */,
-				5F5CC5132F6EBE2C00DB09C9 /* Freelance TimerTests */,
-				5F5CC51D2F6EBE2C00DB09C9 /* Freelance TimerUITests */,
+				5F5CC5002F6EBE2A00DB09C9 /* Open Timer */,
+				5F5CC5132F6EBE2C00DB09C9 /* Open TimerTests */,
+				5F5CC51D2F6EBE2C00DB09C9 /* Open TimerUITests */,
 				5F5CC4FF2F6EBE2A00DB09C9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,9 +85,9 @@
 		5F5CC4FF2F6EBE2A00DB09C9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5F5CC4FE2F6EBE2A00DB09C9 /* Freelance Timer.app */,
-				5F5CC5102F6EBE2C00DB09C9 /* Freelance TimerTests.xctest */,
-				5F5CC51A2F6EBE2C00DB09C9 /* Freelance TimerUITests.xctest */,
+				5F5CC4FE2F6EBE2A00DB09C9 /* Open Timer.app */,
+				5F5CC5102F6EBE2C00DB09C9 /* Open TimerTests.xctest */,
+				5F5CC51A2F6EBE2C00DB09C9 /* Open TimerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		5F5CC4FD2F6EBE2A00DB09C9 /* Freelance Timer */ = {
+		5F5CC4FD2F6EBE2A00DB09C9 /* Open Timer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5F5CC5242F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Freelance Timer" */;
+			buildConfigurationList = 5F5CC5242F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Open Timer" */;
 			buildPhases = (
 				5F5CC4FA2F6EBE2A00DB09C9 /* Sources */,
 				5F5CC4FB2F6EBE2A00DB09C9 /* Frameworks */,
@@ -108,18 +108,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				5F5CC5002F6EBE2A00DB09C9 /* Freelance Timer */,
+				5F5CC5002F6EBE2A00DB09C9 /* Open Timer */,
 			);
-			name = "Freelance Timer";
+			name = "Open Timer";
 			packageProductDependencies = (
 			);
-			productName = "Freelance Timer";
-			productReference = 5F5CC4FE2F6EBE2A00DB09C9 /* Freelance Timer.app */;
+			productName = "Open Timer";
+			productReference = 5F5CC4FE2F6EBE2A00DB09C9 /* Open Timer.app */;
 			productType = "com.apple.product-type.application";
 		};
-		5F5CC50F2F6EBE2C00DB09C9 /* Freelance TimerTests */ = {
+		5F5CC50F2F6EBE2C00DB09C9 /* Open TimerTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5F5CC5272F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Freelance TimerTests" */;
+			buildConfigurationList = 5F5CC5272F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Open TimerTests" */;
 			buildPhases = (
 				5F5CC50C2F6EBE2C00DB09C9 /* Sources */,
 				5F5CC50D2F6EBE2C00DB09C9 /* Frameworks */,
@@ -131,18 +131,18 @@
 				5F5CC5122F6EBE2C00DB09C9 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				5F5CC5132F6EBE2C00DB09C9 /* Freelance TimerTests */,
+				5F5CC5132F6EBE2C00DB09C9 /* Open TimerTests */,
 			);
-			name = "Freelance TimerTests";
+			name = "Open TimerTests";
 			packageProductDependencies = (
 			);
-			productName = "Freelance TimerTests";
-			productReference = 5F5CC5102F6EBE2C00DB09C9 /* Freelance TimerTests.xctest */;
+			productName = "Open TimerTests";
+			productReference = 5F5CC5102F6EBE2C00DB09C9 /* Open TimerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		5F5CC5192F6EBE2C00DB09C9 /* Freelance TimerUITests */ = {
+		5F5CC5192F6EBE2C00DB09C9 /* Open TimerUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5F5CC52A2F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Freelance TimerUITests" */;
+			buildConfigurationList = 5F5CC52A2F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Open TimerUITests" */;
 			buildPhases = (
 				5F5CC5162F6EBE2C00DB09C9 /* Sources */,
 				5F5CC5172F6EBE2C00DB09C9 /* Frameworks */,
@@ -154,13 +154,13 @@
 				5F5CC51C2F6EBE2C00DB09C9 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				5F5CC51D2F6EBE2C00DB09C9 /* Freelance TimerUITests */,
+				5F5CC51D2F6EBE2C00DB09C9 /* Open TimerUITests */,
 			);
-			name = "Freelance TimerUITests";
+			name = "Open TimerUITests";
 			packageProductDependencies = (
 			);
-			productName = "Freelance TimerUITests";
-			productReference = 5F5CC51A2F6EBE2C00DB09C9 /* Freelance TimerUITests.xctest */;
+			productName = "Open TimerUITests";
+			productReference = 5F5CC51A2F6EBE2C00DB09C9 /* Open TimerUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 5F5CC4F92F6EBE2A00DB09C9 /* Build configuration list for PBXProject "Freelance Timer" */;
+			buildConfigurationList = 5F5CC4F92F6EBE2A00DB09C9 /* Build configuration list for PBXProject "Open Timer" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -200,9 +200,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5F5CC4FD2F6EBE2A00DB09C9 /* Freelance Timer */,
-				5F5CC50F2F6EBE2C00DB09C9 /* Freelance TimerTests */,
-				5F5CC5192F6EBE2C00DB09C9 /* Freelance TimerUITests */,
+				5F5CC4FD2F6EBE2A00DB09C9 /* Open Timer */,
+				5F5CC50F2F6EBE2C00DB09C9 /* Open TimerTests */,
+				5F5CC5192F6EBE2C00DB09C9 /* Open TimerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -258,12 +258,12 @@
 /* Begin PBXTargetDependency section */
 		5F5CC5122F6EBE2C00DB09C9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 5F5CC4FD2F6EBE2A00DB09C9 /* Freelance Timer */;
+			target = 5F5CC4FD2F6EBE2A00DB09C9 /* Open Timer */;
 			targetProxy = 5F5CC5112F6EBE2C00DB09C9 /* PBXContainerItemProxy */;
 		};
 		5F5CC51C2F6EBE2C00DB09C9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 5F5CC4FD2F6EBE2A00DB09C9 /* Freelance Timer */;
+			target = 5F5CC4FD2F6EBE2A00DB09C9 /* Open Timer */;
 			targetProxy = 5F5CC51B2F6EBE2C00DB09C9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -414,7 +414,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Freelance-Timer";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Open-Timer";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -447,7 +447,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Freelance-Timer";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Open-Timer";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -470,14 +470,14 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Freelance-TimerTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Open-TimerTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Freelance Timer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Freelance Timer";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Open Timer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Open Timer";
 			};
 			name = Debug;
 		};
@@ -492,14 +492,14 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Freelance-TimerTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Open-TimerTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Freelance Timer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Freelance Timer";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Open Timer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Open Timer";
 			};
 			name = Release;
 		};
@@ -512,14 +512,14 @@
 				DEVELOPMENT_TEAM = U6XZ95X542;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Freelance-TimerUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Open-TimerUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "Freelance Timer";
+				TEST_TARGET_NAME = "Open Timer";
 			};
 			name = Debug;
 		};
@@ -532,21 +532,21 @@
 				DEVELOPMENT_TEAM = U6XZ95X542;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Freelance-TimerUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.harman.ToDoFarm.Open-TimerUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "Freelance Timer";
+				TEST_TARGET_NAME = "Open Timer";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5F5CC4F92F6EBE2A00DB09C9 /* Build configuration list for PBXProject "Freelance Timer" */ = {
+		5F5CC4F92F6EBE2A00DB09C9 /* Build configuration list for PBXProject "Open Timer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5F5CC5222F6EBE2C00DB09C9 /* Debug */,
@@ -555,7 +555,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5F5CC5242F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Freelance Timer" */ = {
+		5F5CC5242F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Open Timer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5F5CC5252F6EBE2C00DB09C9 /* Debug */,
@@ -564,7 +564,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5F5CC5272F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Freelance TimerTests" */ = {
+		5F5CC5272F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Open TimerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5F5CC5282F6EBE2C00DB09C9 /* Debug */,
@@ -573,7 +573,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5F5CC52A2F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Freelance TimerUITests" */ = {
+		5F5CC52A2F6EBE2C00DB09C9 /* Build configuration list for PBXNativeTarget "Open TimerUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5F5CC52B2F6EBE2C00DB09C9 /* Debug */,

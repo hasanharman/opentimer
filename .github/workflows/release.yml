@@ -19,8 +19,8 @@ jobs:
       - name: Build (Release, unsigned)
         run: |
           xcodebuild \
-            -project "Freelance Timer.xcodeproj" \
-            -scheme "Freelance Timer" \
+            -project "Open Timer.xcodeproj" \
+            -scheme "Open Timer" \
             -configuration Release \
             -destination "platform=macOS" \
             -derivedDataPath /tmp/DerivedData \
@@ -34,24 +34,24 @@ jobs:
 
       - name: Create DMG
         run: |
-          mkdir -p /tmp/FreelanceTimerDMG
-          cp -R "/tmp/DerivedData/Build/Products/Release/Freelance Timer.app" /tmp/FreelanceTimerDMG/
+          mkdir -p /tmp/OpenTimerDMG
+          cp -R "/tmp/DerivedData/Build/Products/Release/Open Timer.app" /tmp/OpenTimerDMG/
 
           create-dmg \
-            --volname "Freelance Timer" \
+            --volname "Open Timer" \
             --window-pos 200 120 \
             --window-size 660 400 \
             --icon-size 120 \
             --text-size 14 \
-            --icon "Freelance Timer.app" 180 200 \
-            --hide-extension "Freelance Timer.app" \
+            --icon "Open Timer.app" 180 200 \
+            --hide-extension "Open Timer.app" \
             --app-drop-link 480 200 \
-            "Freelance-Timer-${{ github.ref_name }}.dmg" \
-            "/tmp/FreelanceTimerDMG"
+            "Open-Timer-${{ github.ref_name }}.dmg" \
+            "/tmp/OpenTimerDMG"
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ github.ref_name }}
           generate_release_notes: true
-          files: Freelance-Timer-${{ github.ref_name }}.dmg
+          files: Open-Timer-${{ github.ref_name }}.dmg

@@ -35,5 +35,9 @@ jobs:
       - name: Verify bundle
         run: |
           APP="/tmp/DerivedData/Build/Products/Debug/Open Timer.app"
-          codesign --verify --strict "$APP"
+          # The CI build is unsigned (CODE_SIGNING_ALLOWED=NO), so assert the
+          # build produced a launchable bundle rather than verifying a signature.
+          test -d "$APP" || { echo "App bundle missing"; exit 1; }
+          EXE="$(/usr/libexec/PlistBuddy -c "Print CFBundleExecutable" "$APP/Contents/Info.plist")"
+          test -x "$APP/Contents/MacOS/$EXE" || { echo "Executable '$EXE' missing"; exit 1; }
           /usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP/Contents/Info.plist"

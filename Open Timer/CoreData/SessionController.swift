@@ -33,6 +33,7 @@ final class SessionController: ObservableObject {
         segment.id = UUID()
         segment.startAt = now
         segment.session = session
+        session.startedAt = now
 
         activeSession = session
         activeSegment = segment
@@ -107,6 +108,36 @@ final class SessionController: ObservableObject {
         request.predicate = NSPredicate(format: "endAt == nil")
         request.sortDescriptors = [NSSortDescriptor(key: "startAt", ascending: false)]
         return try? context.fetch(request).first
+    }
+}
+
+extension Session {
+    /// The denormalized session start (earliest segment `startAt`), kept in sync
+    /// so fetches can sort on a scalar attribute instead of faulting `segments`.
+    func refreshStartedAt() {
+        let segments = (self.segments as? Set<SessionSegment>) ?? []
+        startedAt = segments.compactMap { $0.startAt }.min()
+    }
+
+    /// Best-effort start date: the maintained `startedAt`, falling back to the
+    /// earliest segment for records that predate the attribute.
+    var effectiveStart: Date {
+        if let startedAt { return startedAt }
+        let segments = (self.segments as? Set<SessionSegment>) ?? []
+        return segments.compactMap { $0.startAt }.min() ?? .distantPast
+    }
+
+    /// One-time backfill for sessions created before `startedAt` existed.
+    static func backfillStartedAt(in context: NSManagedObjectContext) {
+        let request = NSFetchRequest<Session>(entityName: "Session")
+        request.predicate = NSPredicate(format: "startedAt == nil")
+        guard let sessions = try? context.fetch(request), !sessions.isEmpty else { return }
+        for session in sessions {
+            session.refreshStartedAt()
+        }
+        if context.hasChanges {
+            try? context.save()
+        }
     }
 }
 

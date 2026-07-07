@@ -121,6 +121,7 @@ struct EditSessionView: View {
         newSegment.startAt = startAt
         newSegment.endAt = endAt
         newSegment.session = session
+        session.refreshStartedAt()
 
         try? viewContext.save()
         dismiss()

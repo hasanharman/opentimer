@@ -109,6 +109,7 @@ struct AddSessionView: View {
         segment.startAt = startAt
         segment.endAt = endAt
         segment.session = session
+        session.refreshStartedAt()
 
         try? viewContext.save()
         dismiss()

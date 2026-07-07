@@ -19,6 +19,7 @@
     <entity name="Session" representedClassName="Session" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="note" optional="YES" attributeType="String"/>
+        <attribute name="startedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="project" optional="NO" maxCount="1" deletionRule="Nullify" destinationEntity="Project" inverseName="sessions" inverseEntity="Project"/>
         <relationship name="segments" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SessionSegment" inverseName="session" inverseEntity="SessionSegment"/>
     </entity>

@@ -7,11 +7,21 @@ struct MenuBarDashboardView: View {
     @EnvironmentObject private var sessionController: SessionController
     @Environment(\.openWindow) private var openWindow
 
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(key: "id", ascending: false)],
-        animation: .default
-    )
+    @FetchRequest(fetchRequest: MenuBarDashboardView.sessionsFetchRequest(), animation: .default)
     private var sessions: FetchedResults<Session>
+
+    private static func sessionsFetchRequest() -> NSFetchRequest<Session> {
+        let request = NSFetchRequest<Session>(entityName: "Session")
+        // Sort on the denormalized start instead of the random UUID.
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "startedAt", ascending: false),
+            NSSortDescriptor(key: "id", ascending: false)
+        ]
+        // Batch faulting and prefetch relationships read during aggregation.
+        request.fetchBatchSize = 50
+        request.relationshipKeyPathsForPrefetching = ["segments", "project"]
+        return request
+    }
 
     @FetchRequest(
         sortDescriptors: [
@@ -247,8 +257,7 @@ struct MenuBarDashboardView: View {
     }
 
     private func sessionStart(_ session: Session) -> Date {
-        let segments = (session.segments as? Set<SessionSegment>) ?? []
-        return segments.compactMap { $0.startAt }.min() ?? Date()
+        session.effectiveStart
     }
 
     private func openMainWindow() {
@@ -282,9 +291,14 @@ private struct SimpleWeekChart: View {
         }
     }
 
-    private func weekData() -> [(day: Date, hours: Double, label: String)] {
+    private static let weekdayFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "EE"
+        return formatter
+    }()
+
+    private func weekData() -> [(day: Date, hours: Double, label: String)] {
+        let formatter = Self.weekdayFormatter
         var result: [(Date, Double, String)] = []
         for offset in 0..<7 {
             guard let day = calendar.date(byAdding: .day, value: offset, to: weekStart) else { continue }

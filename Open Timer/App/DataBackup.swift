@@ -184,6 +184,12 @@ enum DataBackup {
             segment.session = session
         }
 
+        // Keep the denormalized session start in sync for every imported session.
+        let allSessions = (try? context.fetch(NSFetchRequest<Session>(entityName: "Session"))) ?? []
+        for session in allSessions {
+            session.refreshStartedAt()
+        }
+
         try context.save()
     }
 

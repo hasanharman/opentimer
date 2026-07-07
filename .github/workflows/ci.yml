@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "website/**"
+      - "**.md"
+  pull_request:
+    paths-ignore:
+      - "website/**"
+      - "**.md"
+
+jobs:
+  build:
+    name: Build macOS app
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
+
+      - name: Build (Debug)
+        run: |
+          xcodebuild \
+            -project "Open Timer.xcodeproj" \
+            -scheme "Open Timer" \
+            -configuration Debug \
+            -destination "platform=macOS" \
+            -derivedDataPath /tmp/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Verify bundle
+        run: |
+          APP="/tmp/DerivedData/Build/Products/Debug/Open Timer.app"
+          codesign --verify --strict "$APP"
+          /usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP/Contents/Info.plist"

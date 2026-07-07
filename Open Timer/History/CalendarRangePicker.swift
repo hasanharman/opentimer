@@ -162,10 +162,21 @@ struct CalendarRangePicker: View {
         calendar.startOfDay(for: date)
     }
 
-    private func monthTitle(for date: Date) -> String {
+    private static let monthTitleFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
-        return formatter.string(from: date)
+        return formatter
+    }()
+
+    private static let mediumDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }()
+
+    private func monthTitle(for date: Date) -> String {
+        Self.monthTitleFormatter.string(from: date)
     }
 
     private func monthDays(for date: Date) -> [Date?] {
@@ -188,9 +199,7 @@ struct CalendarRangePicker: View {
     }
 
     private var rangeLabel: String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
+        let formatter = Self.mediumDateFormatter
         return "\(formatter.string(from: start)) – \(formatter.string(from: end))"
     }
 }

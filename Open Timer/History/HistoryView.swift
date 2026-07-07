@@ -24,11 +24,23 @@ struct HistoryView: View {
     @State private var customStart = Calendar.current.startOfDay(for: Date())
     @State private var customEnd = Calendar.current.startOfDay(for: Date())
 
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(key: "id", ascending: false)],
-        animation: .default
-    )
+    @FetchRequest(fetchRequest: HistoryView.sessionsFetchRequest(), animation: .default)
     private var sessions: FetchedResults<Session>
+
+    private static func sessionsFetchRequest() -> NSFetchRequest<Session> {
+        let request = NSFetchRequest<Session>(entityName: "Session")
+        // Sort on the denormalized start (a scalar attribute) instead of the random
+        // UUID, so results are actually chronological without an in-memory re-sort.
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "startedAt", ascending: false),
+            NSSortDescriptor(key: "id", ascending: false)
+        ]
+        // Batch faulting and prefetch the relationships the views immediately read,
+        // so aggregation doesn't fault each session/segment individually.
+        request.fetchBatchSize = 50
+        request.relationshipKeyPathsForPrefetching = ["segments", "project"]
+        return request
+    }
 
     @FetchRequest(
         sortDescriptors: [
@@ -430,9 +442,7 @@ struct HistoryView: View {
     }
 
     private func sessionStart(_ session: Session) -> Date {
-        let segments = (session.segments as? Set<SessionSegment>) ?? []
-        let earliest = segments.compactMap { $0.startAt }.min() ?? Date()
-        return earliest
+        session.effectiveStart
     }
 
     private func resolvedInterval(now: Date) -> DateInterval {
@@ -448,10 +458,15 @@ struct HistoryView: View {
         return summaryDateInterval(range: range, now: now)
     }
 
-    private func rangeLabel(interval: DateInterval) -> String {
+    private static let mediumDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
+        return formatter
+    }()
+
+    private func rangeLabel(interval: DateInterval) -> String {
+        let formatter = Self.mediumDateFormatter
         let display = displayRange(interval: interval)
         if useCustomRange {
             return "\(formatter.string(from: customStart)) – \(formatter.string(from: customEnd))"

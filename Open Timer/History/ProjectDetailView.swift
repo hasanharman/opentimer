@@ -139,8 +139,7 @@ struct ProjectDetailView: View {
     }
 
     private func sessionStart(_ session: Session) -> Date {
-        let segments = (session.segments as? Set<SessionSegment>) ?? []
-        return segments.compactMap { $0.startAt }.min() ?? Date()
+        session.effectiveStart
     }
 }
 

@@ -150,10 +150,15 @@ struct SummaryView: View {
         return summaryDateInterval(range: range, now: now)
     }
 
-    private func rangeLabel(interval: DateInterval) -> String {
+    private static let mediumDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
+        return formatter
+    }()
+
+    private func rangeLabel(interval: DateInterval) -> String {
+        let formatter = Self.mediumDateFormatter
         let display = displayRange(interval: interval)
         if useCustomRange {
             return "\(formatter.string(from: customStart)) – \(formatter.string(from: customEnd))"
@@ -162,9 +167,7 @@ struct SummaryView: View {
     }
 
     private func dateRangeDescription(interval: DateInterval) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
+        let formatter = Self.mediumDateFormatter
         let display = displayRange(interval: interval)
         if useCustomRange {
             return "\(formatter.string(from: customStart)) – \(formatter.string(from: customEnd))"

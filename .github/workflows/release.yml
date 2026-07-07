@@ -5,8 +5,12 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build-and-release:
+    name: Build and publish release
     runs-on: macos-15
 
     steps:
@@ -16,26 +20,93 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.2.app
 
-      - name: Build (Release, unsigned)
+      - name: Derive version from tag
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+
+      # Optional: set MACOS_CERTIFICATE_P12 (base64-encoded .p12) and
+      # MACOS_CERTIFICATE_PASSWORD secrets to sign with a Developer ID
+      # Application certificate. Without them the app is ad-hoc signed.
+      - name: Import Developer ID certificate
+        env:
+          MACOS_CERTIFICATE_P12: ${{ secrets.MACOS_CERTIFICATE_P12 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+        run: |
+          if [[ -z "$MACOS_CERTIFICATE_P12" ]]; then
+            echo "No signing certificate configured; the app will be ad-hoc signed."
+            exit 0
+          fi
+          KEYCHAIN_PATH="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(uuidgen)"
+          echo "$MACOS_CERTIFICATE_P12" | base64 --decode > "$RUNNER_TEMP/certificate.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$RUNNER_TEMP/certificate.p12" -P "$MACOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH" > /dev/null
+          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain
+          IDENTITY="$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | awk -F'"' '/Developer ID Application/ { print $2; exit }')"
+          if [[ -z "$IDENTITY" ]]; then
+            echo "Certificate imported but no Developer ID Application identity found." >&2
+            exit 1
+          fi
+          echo "CODESIGN_IDENTITY=$IDENTITY" >> "$GITHUB_ENV"
+
+      - name: Build (Release, universal)
         run: |
           xcodebuild \
             -project "Open Timer.xcodeproj" \
             -scheme "Open Timer" \
             -configuration Release \
-            -destination "platform=macOS" \
+            -destination "generic/platform=macOS" \
             -derivedDataPath /tmp/DerivedData \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
+            ARCHS="arm64 x86_64" \
+            ONLY_ACTIVE_ARCH=NO \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
             CODE_SIGNING_ALLOWED=NO \
             build
+
+      - name: Sign app
+        run: |
+          APP="/tmp/DerivedData/Build/Products/Release/Open Timer.app"
+          if [[ -n "${CODESIGN_IDENTITY:-}" ]]; then
+            codesign --force --options runtime --timestamp \
+              --sign "$CODESIGN_IDENTITY" "$APP"
+          else
+            echo "Ad-hoc signing (no Developer ID identity available)."
+            codesign --force --sign - "$APP"
+          fi
+          codesign --verify --strict --verbose=2 "$APP"
+
+      # Optional: set NOTARY_APPLE_ID, NOTARY_TEAM_ID, and NOTARY_PASSWORD
+      # (app-specific password) secrets to notarize the signed app.
+      - name: Notarize
+        env:
+          NOTARY_APPLE_ID: ${{ secrets.NOTARY_APPLE_ID }}
+          NOTARY_TEAM_ID: ${{ secrets.NOTARY_TEAM_ID }}
+          NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
+        run: |
+          if [[ -z "$NOTARY_APPLE_ID" || -z "${CODESIGN_IDENTITY:-}" ]]; then
+            echo "Notarization skipped (requires a Developer ID signature and notary secrets)."
+            exit 0
+          fi
+          APP="/tmp/DerivedData/Build/Products/Release/Open Timer.app"
+          ditto -c -k --keepParent "$APP" "$RUNNER_TEMP/OpenTimer-notarize.zip"
+          xcrun notarytool submit "$RUNNER_TEMP/OpenTimer-notarize.zip" \
+            --apple-id "$NOTARY_APPLE_ID" \
+            --team-id "$NOTARY_TEAM_ID" \
+            --password "$NOTARY_PASSWORD" \
+            --wait
+          xcrun stapler staple "$APP"
 
       - name: Install create-dmg
         run: brew install create-dmg
 
-      - name: Create DMG
+      - name: Package DMG, zip, and checksums
         run: |
-          mkdir -p /tmp/OpenTimerDMG
-          cp -R "/tmp/DerivedData/Build/Products/Release/Open Timer.app" /tmp/OpenTimerDMG/
+          APP="/tmp/DerivedData/Build/Products/Release/Open Timer.app"
+          mkdir -p dist /tmp/OpenTimerDMG
+          cp -R "$APP" /tmp/OpenTimerDMG/
 
           create-dmg \
             --volname "Open Timer" \
@@ -46,12 +117,29 @@ jobs:
             --icon "Open Timer.app" 180 200 \
             --hide-extension "Open Timer.app" \
             --app-drop-link 480 200 \
-            "Open-Timer-${{ github.ref_name }}.dmg" \
+            "dist/Open-Timer-$VERSION.dmg" \
             "/tmp/OpenTimerDMG"
+
+          ditto -c -k --keepParent "$APP" "dist/Open-Timer-$VERSION.zip"
+          (cd dist && shasum -a 256 "Open-Timer-$VERSION.dmg" "Open-Timer-$VERSION.zip" > checksums.txt)
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ github.ref_name }}
           generate_release_notes: true
-          files: Open-Timer-${{ github.ref_name }}.dmg
+          body: |
+            ## Install
+
+            Download `Open-Timer-${{ env.VERSION }}.dmg`, open it, and drag **Open Timer** to Applications.
+
+            > **Note:** if the build is not notarized, macOS Gatekeeper will block the first launch.
+            > Clear the quarantine flag after copying to Applications:
+            > ```
+            > xattr -cr "/Applications/Open Timer.app"
+            > ```
+            > then open the app normally.
+          files: |
+            dist/*.dmg
+            dist/*.zip
+            dist/checksums.txt

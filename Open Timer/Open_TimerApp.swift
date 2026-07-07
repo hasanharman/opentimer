@@ -34,6 +34,8 @@ struct Open_TimerApp: App {
 
     init() {
         let context = persistenceController.container.viewContext
+        // Backfill `startedAt` for sessions created before the attribute existed.
+        Session.backfillStartedAt(in: context)
         _sessionController = StateObject(wrappedValue: SessionController(viewContext: context))
     }
 
